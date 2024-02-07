@@ -16,7 +16,20 @@ import pandas as pd
 
 #######################################################################################################################################
 
+def CargarArchivos():
+
+    df_games_tec = pd.read_parquet('df_games_tec.parquet')
+    df_games_genres = pd.read_parquet('df_games_genres.parquet')
+    df_games_specs = pd.read_parquet('df_games_specs.parquet')
+    df_games_tags = pd.read_parquet('df_games_tags.parquet')
+    df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet')
+    df_items = pd.read_parquet('df_items.parquet')
+    
+#######################################################################################################################################
+     
 def developer(desarrollador : str):
+
+    CargarArchivos()
 
     # Paso 1: Filtra el DataFrame original
     df_func_1 = df_games_tec[['item_id', 'developer', 'release_year', 'price']]
@@ -59,6 +72,9 @@ def developer(desarrollador : str):
 #######################################################################################################################################
 
 def userdata(user_id : str):
+
+    CargarArchivos()
+
     # Obtener recomendaciones
     reco_usuario = df_reviews_con_sa[df_reviews_con_sa['user_id'] == user_id]
     reco_positiva = len(reco_usuario[reco_usuario['recommend'] == True])
@@ -88,6 +104,8 @@ def userdata(user_id : str):
 #######################################################################################################################################
 
 def UserForGenre(genero):
+
+    CargarArchivos()
 
     # Filtro inicialmente los juegos del genero seleccionado
     df_genre = df_games_genres[df_games_genres[genre] == True]
@@ -119,6 +137,8 @@ def UserForGenre(genero):
 
 def best_developer_year(year : int):
 
+    CargarArchivos()
+
     df_games_year = df_games_tec[df_games_tec["release_year"] == year]
 
     df_func_4 = pd.merge(df_games_year[["app_name",'item_id',"developer"]], df_reviews_con_sa[["item_id",'recommend','sentiment_analysis']], on='item_id', how='inner')
@@ -141,6 +161,8 @@ def best_developer_year(year : int):
 
 def developer_reviews_analysis(desarrolladora : str):
 
+    CargarArchivos()
+    
     # Filtrar el DataFrame por el desarrollador dado
     df_games_developer = df_games_tec[df_games_tec["developer"] == desarrolladora]
 
