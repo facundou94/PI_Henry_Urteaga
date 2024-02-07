@@ -18,6 +18,10 @@ df_items = pd.read_parquet('df_items.parquet')
 
 app = FastAPI()
 
+@app.get('/')
+def home():
+    return {"message": "Hello World"}
+
 @app.get('/developer')
 def developer(developer: str):
     resultado = funciones.developer(developer)
