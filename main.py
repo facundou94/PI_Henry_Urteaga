@@ -55,3 +55,8 @@ def probar_librerias():
     }
     creacion = pd.DataFrame(datos)
     return creacion
+
+@app.get('/suma_sencilla')
+def suma_sencilla(primer_valor : int, segundo_valor : int):
+    suma = primer_valor + segundo_valor
+    return suma 
