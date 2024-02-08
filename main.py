@@ -58,5 +58,6 @@ def probar_librerias():
 
 @app.get('/suma_sencilla')
 def suma_sencilla(primer_valor : int, segundo_valor : int):
-    suma = primer_valor + segundo_valor
+    lista = [primer_valor, segundo_valor]
+    suma = np.sum(lista)
     return suma 
