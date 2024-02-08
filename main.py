@@ -47,8 +47,11 @@ def developer_reviews_analysis(desarrolladora: int):
     resultado = funciones.developer_reviews_analysis(desarrolladora)
     return resultado
 
-def developer2(developer: str):
-    resultado = funciones.developer(developer)
-    return resultado
-
-developer2("Ubisoft")
+@app.get('/probar_librerias')
+def probar_librerias():
+    datos = {
+    'Nombre': ['Juan', np.nan, 'Pedro', 'Ana'],
+    'Edad': [np.nan, 30, 35, 40],
+    }
+    creacion = pd.DataFrame(datos)
+    return creacion
