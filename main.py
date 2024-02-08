@@ -47,4 +47,8 @@ def developer_reviews_analysis(desarrolladora: int):
     resultado = funciones.developer_reviews_analysis(desarrolladora)
     return resultado
 
-#funciones.developer("Ubisoft")
+def developer2(developer: str):
+    resultado = funciones.developer(developer)
+    return resultado
+
+developer2("Ubisoft")
