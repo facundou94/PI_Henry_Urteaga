@@ -3,18 +3,9 @@
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI
-import funciones
+#import funciones
 
 app = FastAPI()
-
-@app.get('/')
-def home():
-    return {"message": "Hello World"}
-
-@app.get('/developer')
-def developer(developer: str):
-    resultado = funciones.developer(developer)
-    return resultado
 
 @app.get('/userdata')
 def userdata(user_id: str):
@@ -25,20 +16,25 @@ def userdata(user_id: str):
     except Exception as e:
         return {"Error": str(e)}
 
-@app.get('/UserForGenre')
-def UserForGenre(genero: str):
-    resultado = funciones.UserForGenre(genero)
-    return resultado
+# @app.get('/developer')
+# def developer(developer: str):
+#     resultado = funciones.developer(developer)
+#     return resultado
 
-@app.get('/best_developer_year')
-def best_developer_year(year: int):
-    resultado = funciones.best_developer_year(year)
-    return resultado
+# @app.get('/UserForGenre')
+# def UserForGenre(genero: str):
+#     resultado = funciones.UserForGenre(genero)
+#     return resultado
 
-@app.get('/developer_reviews_analysis')
-def developer_reviews_analysis(desarrolladora: int):
-    resultado = funciones.developer_reviews_analysis(desarrolladora)
-    return resultado
+# @app.get('/best_developer_year')
+# def best_developer_year(year: int):
+#     resultado = funciones.best_developer_year(year)
+#     return resultado
+
+# @app.get('/developer_reviews_analysis')
+# def developer_reviews_analysis(desarrolladora: int):
+#     resultado = funciones.developer_reviews_analysis(desarrolladora)
+#     return resultado
 
 @app.get('/probar_librerias')
 def probar_librerias():
