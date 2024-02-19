@@ -11,15 +11,6 @@ app = FastAPI()
 def home():
     return {"message": "Hello World"}
 
-@app.get('/prueba_string')
-def prueba_string(palabra: str):
-    if palabra == "correcta":
-        print("Palabra correcta. Esto es un print")
-        return "Palabra correcta. Esto es un return"
-    else:
-        print("Palabra incorrecta. Esto es un print")
-        return "Palabra incorrecta. Esto es un return"
-
 @app.get('/developer')
 def developer(developer: str):
     resultado = funciones.developer(developer)
@@ -27,8 +18,12 @@ def developer(developer: str):
 
 @app.get('/userdata')
 def userdata(user_id: str):
-    resultado = funciones.userdata(user_id)
-    return resultado
+    try:
+        resultado = funciones.userdata(user_id)
+        return resultado
+    
+    except Exception as e:
+        return {"Error": str(e)}
 
 @app.get('/UserForGenre')
 def UserForGenre(genero: str):
