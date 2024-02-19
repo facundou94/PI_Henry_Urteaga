@@ -55,8 +55,6 @@ def suma_sencilla(primer_valor : int, segundo_valor : int):
 
 def userdata2(user_id : str):
 
-    try:
-        
         df_games_tec = pd.read_parquet('df_games_tec.parquet')
         df_games_genres = pd.read_parquet('df_games_genres.parquet')
         df_games_specs = pd.read_parquet('df_games_specs.parquet')
@@ -89,7 +87,3 @@ def userdata2(user_id : str):
             "Cantidad de items": cantidad_items }
         
         return resultado
-
-    except Exception as e:
-        
-        return {"Error": str(e)}
