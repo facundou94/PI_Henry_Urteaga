@@ -5,7 +5,7 @@ import pandas as pd
 from fastapi import FastAPI
 #import funciones
 
-# app = FastAPI()
+app = FastAPI()
 
 # @app.get('/userdata')
 # def userdata(user_id: str):
