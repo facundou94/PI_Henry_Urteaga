@@ -46,7 +46,10 @@ def probar_librerias():
     'Nombre': ['Juan', np.nan, 'Pedro', 'Ana'],
     'Edad': [np.nan, 30, 35, 40],
     }
-    return datos
+
+    datos_str = str(datos)
+    
+    return datos_str
 
 @app.get('/suma_sencilla')
 def suma_sencilla(primer_valor : int, segundo_valor : int):
