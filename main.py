@@ -46,8 +46,7 @@ def probar_librerias():
     'Nombre': ['Juan', np.nan, 'Pedro', 'Ana'],
     'Edad': [np.nan, 30, 35, 40],
     }
-    creacion = pd.DataFrame(datos)
-    return creacion
+    return datos
 
 @app.get('/suma_sencilla')
 def suma_sencilla(primer_valor : int, segundo_valor : int):
