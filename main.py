@@ -14,7 +14,7 @@ async def root():
 @app.get('/GetPlayTimeGenre')
 def GetPlayTimeGenre(genero: str):
     resultado = PlayTimeGenre(genero)
-    return {"message": "Hello World"}
+    return resultado
 
 # @app.get('/developer')
 # def developer(developer: str):
