@@ -13,12 +13,8 @@ async def root():
 
 @app.get('/PlayTimeGenre')
 def PlayTimeGenre(genero: str):
-     try:
-         resultado = PlayTimeGenre(genero)
-         return resultado
-    
-     except Exception as e:
-         return {"Error": str(e)}
+    resultado = PlayTimeGenre(genero)
+    return resultado
 
 # @app.get('/developer')
 # def developer(developer: str):
