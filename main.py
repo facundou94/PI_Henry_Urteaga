@@ -11,9 +11,9 @@ app = FastAPI()
 async def root():
     return {"message": "Hello World"}
 
-@app.get('/PlayTimeGenre')
-def PlayTimeGenre(genero: str):
-    resultado = PlayTimeGenre(genero)
+@app.get('/GetPlayTimeGenre')
+def GetPlayTimeGenre(genero: str):
+    resultado = funciones.PlayTimeGenre(genero)
     return resultado
 
 # @app.get('/developer')
