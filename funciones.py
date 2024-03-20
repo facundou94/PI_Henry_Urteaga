@@ -11,6 +11,9 @@ from sklearn.neighbors import NearestNeighbors
 
 def PlayTimeGenre(genero):
 
+    import numpy as np
+    import pandas as pd
+
     df_games_tec = pd.read_parquet('df_games_tec.parquet')
     df_games_genres = pd.read_parquet('df_games_genres.parquet')
     df_items = pd.read_parquet('df_items.parquet')
