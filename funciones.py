@@ -225,3 +225,5 @@ def recomendacion_juego(item_id):
         juegos_recomendados.append(juego_recomendado)
     
     return juegos_recomendados
+
+# 76561198079601835
