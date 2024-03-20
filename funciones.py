@@ -42,7 +42,8 @@ def PlayTimeGenre(genero):
     # Encontrar el año con la mayor cantidad de horas jugadas acumuladas
     max_total_playtime_year = df_horas_jugadas_por_ano.loc[df_horas_jugadas_por_ano['playtime_forever'].idxmax(), 'release_year']
     
-    return f"{{'Año de lanzamiento con más horas jugadas para Género {genero}': {max_total_playtime_year}}}"
+    string_return = f"{{'Año de lanzamiento con más horas jugadas para Género {genero}': {max_total_playtime_year}}}"
+    return string_return
 
 # 3. Función UserForGenre
 
@@ -168,7 +169,7 @@ def sentiment_analysis(anio):
 
     df_games_tec = pd.read_parquet('df_games_tec.parquet')
     df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet')
-    
+
     df_reviews_juegos = pd.merge(df_reviews_con_sa[['item_id', 'recommend','sentiment_analysis']], 
                              df_games_tec[["item_id","app_name","release_year"]], on='item_id', how='inner')
     
