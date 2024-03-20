@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI
-#import funciones
+from 6_Funciones import PlayTimeGenre
 
 app = FastAPI()
 
@@ -11,10 +11,10 @@ app = FastAPI()
 async def root():
     return {"message": "Hello World"}
 
-@app.get('/userdata')
-def userdata(user_id: str):
+@app.get('/PlayTimeGenre')
+def PlayTimeGenre(genero: str):
      try:
-         resultado = str(userdata2(user_id))
+         resultado = PlayTimeGenre(genero)
          return resultado
     
      except Exception as e:
