@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI
-from 6_Funciones import PlayTimeGenre
+from funciones import PlayTimeGenre
 
 app = FastAPI()
 

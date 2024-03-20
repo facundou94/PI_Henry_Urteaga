@@ -1,187 +1,226 @@
-# Scripts con las funciones
+# 1. Carga de librerías
 
-#######################################################################################################################################
-
-# Carga de librerías
 import numpy as np
 import pandas as pd
+from sklearn.neighbors import NearestNeighbors
 
-# Carga de archivos
-df_games_tec = pd.read_parquet('df_games_tec.parquet')
-df_games_genres = pd.read_parquet('df_games_genres.parquet')
-df_games_specs = pd.read_parquet('df_games_specs.parquet')
-df_games_tags = pd.read_parquet('df_games_tags.parquet')
-df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet')
-df_items = pd.read_parquet('df_items.parquet')
+# 2. Función PlayTimeGenre
 
-#######################################################################################################################################
+# def PlayTimeGenre( genero : str ): Debe devolver año con mas horas jugadas para dicho género.
+# Ejemplo de retorno: {"Año de lanzamiento con más horas jugadas para Género X" : 2013}
 
-def CargarArchivos():
+def PlayTimeGenre(genero):
 
     df_games_tec = pd.read_parquet('df_games_tec.parquet')
     df_games_genres = pd.read_parquet('df_games_genres.parquet')
-    df_games_specs = pd.read_parquet('df_games_specs.parquet')
-    df_games_tags = pd.read_parquet('df_games_tags.parquet')
-    df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet')
     df_items = pd.read_parquet('df_items.parquet')
+
+    merged_df_1 = pd.merge(df_games_tec[["app_name","item_id","release_year"]], df_games_genres, on='item_id', how='inner')
+    merged_df_2 = pd.merge(merged_df_1, df_items[["item_id","playtime_forever"]], on='item_id', how='inner')
+
+    # Lista de géneros disponibles
+    generos_disponibles = ['Utilities', 'Racing', 'Massively Multiplayer', 'Sports', 'Action', 
+                           'Audio Production', 'Indie', 'Web Publishing', 'RPG', 'Photo Editing', 
+                           'Casual', 'Software Training', 'Animation & Modeling', 
+                           'Design & Illustration', 'Simulation', 'Adventure', 'Early Access', 
+                           'Video Production', 'Education', 'Accounting', 'Free to Play', 'Strategy']
     
-#######################################################################################################################################
-     
-def developer(desarrollador : str):
-
-    CargarArchivos()
-
-    # Paso 1: Filtra el DataFrame original
-    df_func_1 = df_games_tec[['item_id', 'developer', 'release_year', 'price']]
-    df_func_1_filtrado = df_func_1[df_func_1['developer'] == desarrollador]
-
-    # Paso 2: Contar la cantidad de elementos por año y la cantidad de elementos con price = 0 para cada año
-    conteo_por_anio = df_func_1_filtrado['release_year'].value_counts()
-    cantidad_price_cero_por_anio = (df_func_1_filtrado['price'] == 0).groupby(df_func_1_filtrado['release_year']).sum()
-
-    # Paso 3: Asegurarse de que ambos DataFrames tengan el mismo índice y tipo de datos para la columna de años
-    conteo_por_anio = conteo_por_anio.astype(int)
-    cantidad_price_cero_por_anio.index = cantidad_price_cero_por_anio.index.astype(int)
-
-    # Paso 4: Llenar los valores faltantes con ceros
-    indices_totales = set(conteo_por_anio.index) | set(cantidad_price_cero_por_anio.index)
-    conteo_por_anio = conteo_por_anio.reindex(indices_totales, fill_value=0)
-    cantidad_price_cero_por_anio = cantidad_price_cero_por_anio.reindex(indices_totales, fill_value=0)
-
-    # Paso 5: Crear un nuevo DataFrame con los resultados
-    df_resultado = pd.DataFrame({
-        'Año de lanzamiento': conteo_por_anio.index,
-        'Cantidad de items': conteo_por_anio.values,
-        'Cantidad de contenido Free': cantidad_price_cero_por_anio.values,
-        "Porcentaje de contenido Free (%)": cantidad_price_cero_por_anio.values
-    })
-
-    # Paso 6: Ordenar los años de mayor a menor
-    df_resultado = df_resultado.sort_values(by='Año de lanzamiento', ascending=False)
-
-    # Paso 7: Expresar como porcentaje
-    for iter in (range(0, len(df_resultado))):
-        df_resultado.at[iter,"Porcentaje de contenido Free (%)"] = round((df_resultado["Cantidad de contenido Free"].iloc[iter]/
-                                                                    df_resultado["Cantidad de items"].iloc[iter])*100,2)
-        
-    df_resultado = df_resultado.drop(columns=['Cantidad de contenido Free'])
-    # Mostrar el DataFrame resultado
+    # Verifica si el género especificado existe en la base de datos
+    if genero not in merged_df_2.columns:
+        return f"No se encontró el género '{genero}' en la base de datos. Géneros disponibles: {', '.join(generos_disponibles)}"
     
-    print(df_resultado)
-
-#######################################################################################################################################
-
-def userdata(user_id : str):
-
-    try:
-        
-        CargarArchivos()
-
-        # Obtener recomendaciones
-        reco_usuario = df_reviews_con_sa[df_reviews_con_sa['user_id'] == user_id]
-        reco_positiva = len(reco_usuario[reco_usuario['recommend'] == True])
-
-        df_items_filtrado = df_items[df_items['user_id'] == user_id]
-
-        df_func_2 = pd.merge(df_games_tec[["item_id","price"]], df_items_filtrado[["user_id","item_id"]], on='item_id', how='inner')
-
-        # Calcula el total del dinero gastado por el usuario
-        dinero_gastado = round(df_func_2['price'].sum(),2)
-
-        # Calcula el porcentaje de recomendación del usuario
-        porcentaje_recomendacion = round((reco_positiva / len(df_func_2)) * 100,2)
-
-        # Calcula la cantidad total de items comprados por el usuario
-        cantidad_items = len(df_func_2)
-
-        # Retorna los resultados en un diccionario con el formato deseado
-        resultado = {
-            "Usuario": user_id,
-            "Dinero gastado": f"{dinero_gastado} USD",
-            "% de recomendación": f"{porcentaje_recomendacion:.2f}%",
-            "Cantidad de items": cantidad_items }
-        
-        return resultado
-
-    except Exception as e:
-        
-        return {"Error": str(e)}
-
-    #######################################################################################################################################
-
-    def UserForGenre(genero):
-
-        CargarArchivos()
-
-        # Filtro inicialmente los juegos del genero seleccionado
-        df_genre = df_games_genres[df_games_genres[genre] == True]
-        # Filtro solo jugadores que hayan jugado juegos de este género
-        df_func_3_aux = pd.merge(df_items[["user_id","item_id",'playtime_forever']], df_genre[["item_id"]], on='item_id', how='inner')
-        df_func_3 = pd.merge(df_func_3_aux, df_games_tec[["item_id",'release_year']], on='item_id', how='inner')
-
-        # Calcula la suma total de playtime_forever para cada usuario
-        suma_playtime_por_usuario = df_func_3.groupby('user_id')['playtime_forever'].sum()
-
-        # Encuentra el usuario con la mayor suma de playtime_forever
-        usuario_max_playtime = suma_playtime_por_usuario.idxmax()
-
-        # Filtra el DataFrame original para obtener solo las filas asociadas con ese usuario
-        df_usuario_max_playtime = df_func_3[df_func_3['user_id'] == usuario_max_playtime]
-
-        # Agrupa las horas jugadas por año para ese usuario
-        horas_por_anio = df_usuario_max_playtime.groupby('release_year')['playtime_forever'].sum()
-
-        # Construye el diccionario con el formato deseado
-        resultado = {
-            "Usuario con más horas jugadas para Género X": usuario_max_playtime,
-            "Horas jugadas": [{"Año": año, "Horas": horas} for año, horas in horas_por_anio.items()]
-                    }
-        
-        return resultado
-
-    #######################################################################################################################################
-
-    def best_developer_year(year : int):
-
-        CargarArchivos()
-
-        df_games_year = df_games_tec[df_games_tec["release_year"] == year]
-
-        df_func_4 = pd.merge(df_games_year[["app_name",'item_id',"developer"]], df_reviews_con_sa[["item_id",'recommend','sentiment_analysis']], on='item_id', how='inner')
-
-        # Calcular el valor de (recommend + sentiment_analysis * 0.25) para cada item_id para cada user_id
-        df_func_4['score'] = df_func_4['recommend'] + df_func_4['sentiment_analysis'] * 0.25
-
-        # Calcular el valor de (recommend + sentiment_analysis * 0.25) para cada desarrollador
-        df_func_4['score'] = df_func_4['recommend'] + df_func_4['sentiment_analysis'] * 0.25
-
-        # Agrupar por desarrolladores y obtener el top 3
-        top_3_desarrolladores = df_func_4.groupby('developer')['score'].sum().nlargest(3)
-
-        # Construir una lista de diccionarios con el formato deseado
-        resultado = [{"Puesto {}: {}".format(i + 1, desarrollador[0]): desarrollador[1]} for i, desarrollador in enumerate(top_3_desarrolladores.items())]
-
-        return resultado
+    # Filtra el DataFrame por el género especificado
+    df_genero_especifico = merged_df_2[merged_df_2[genero] == 1]
     
-#######################################################################################################################################
-
-def developer_reviews_analysis(desarrolladora : str):
-
-    CargarArchivos()
+    # Verifica si no hay datos para el género especificado
+    if df_genero_especifico.empty:
+        return f"No hay datos para el género '{genero}'. Géneros disponibles: {', '.join(generos_disponibles)}"
     
-    # Filtrar el DataFrame por el desarrollador dado
-    df_games_developer = df_games_tec[df_games_tec["developer"] == desarrolladora]
+    # Agrupar por año de lanzamiento y sumar las horas jugadas
+    df_horas_jugadas_por_ano = df_genero_especifico.groupby('release_year')['playtime_forever'].sum().reset_index()
+    
+    # Encontrar el año con la mayor cantidad de horas jugadas acumuladas
+    max_total_playtime_year = df_horas_jugadas_por_ano.loc[df_horas_jugadas_por_ano['playtime_forever'].idxmax(), 'release_year']
+    
+    return f"{{'Año de lanzamiento con más horas jugadas para Género {genero}': {max_total_playtime_year}}}"
 
-    # Realizar la fusión de DataFrames
-    df_func_5 = pd.merge(df_games_developer[['item_id', "developer"]], df_reviews_con_sa[["item_id", 'sentiment_analysis']], on='item_id', how='inner')
+# 3. Función UserForGenre
 
-    # Calcular el total de negativos y positivos
-    total_negativos = (df_func_5['sentiment_analysis'] == 0).sum()
-    total_positivos = (df_func_5['sentiment_analysis'] == 2).sum()
+# def UserForGenre( genero : str ): Debe devolver el usuario que acumula más horas jugadas para el género dado y una lista de la acumulación de horas jugadas por año.
+# Ejemplo de retorno: {"Usuario con más horas jugadas para Género X" : us213ndjss09sdf, "Horas jugadas":[{Año: 2013, Horas: 203}, {Año: 2012, Horas: 100}, {Año: 2011, Horas: 23}]}
 
-    # Construir el diccionario con el formato deseado
-    resultado = {developer: {"Negative": total_negativos, "Positive": total_positivos}}
+def UserForGenre(genero):
 
+    df_games_genres = pd.read_parquet('df_games_genres.parquet')
+    df_items = pd.read_parquet('df_items.parquet')
+    df_games_tec = pd.read_parquet('df_games_tec.parquet')
+
+    # Lista de géneros disponibles
+    generos_disponibles = ['Utilities', 'Racing', 'Massively Multiplayer', 'Sports', 'Action', 
+                           'Audio Production', 'Indie', 'Web Publishing', 'RPG', 'Photo Editing', 
+                           'Casual', 'Software Training', 'Animation & Modeling', 
+                           'Design & Illustration', 'Simulation', 'Adventure', 'Early Access', 
+                           'Video Production', 'Education', 'Accounting', 'Free to Play', 'Strategy']
+    
+    
+    # Verificar si el género especificado existe en el DataFrame df_games_genres
+    if genero not in df_games_genres.columns:
+        return f"No se encontró el género '{genero}' en la base de datos. Géneros disponibles: {', '.join(generos_disponibles)}"
+    
+    # Filtro inicialmente los juegos del genero seleccionado
+    df_genre = df_games_genres[df_games_genres[genero] == True]
+    
+    # Filtro solo jugadores que hayan jugado juegos de este género
+    df_func_3_aux = pd.merge(df_items[["user_id","item_id",'playtime_forever']], df_genre[["item_id"]], on='item_id', how='inner')
+    df_func_3 = pd.merge(df_func_3_aux, df_games_tec[["item_id",'release_year']], on='item_id', how='inner')
+
+    # Calcula la suma total de playtime_forever para cada usuario
+    suma_playtime_por_usuario = df_func_3.groupby('user_id')['playtime_forever'].sum()
+
+    # Encuentra el usuario con la mayor suma de playtime_forever
+    usuario_max_playtime = suma_playtime_por_usuario.idxmax()
+
+    # Filtra el DataFrame original para obtener solo las filas asociadas con ese usuario
+    df_usuario_max_playtime = df_func_3[df_func_3['user_id'] == usuario_max_playtime]
+
+    # Agrupa las horas jugadas por año para ese usuario
+    horas_por_anio = df_usuario_max_playtime.groupby('release_year')['playtime_forever'].sum()
+
+    # Construye el diccionario con el formato deseado
+    resultado = {
+    f"Usuario con más horas jugadas para Género {genero}": usuario_max_playtime,
+    "Horas jugadas": [{"Año": año, "Horas": horas} for año, horas in horas_por_anio.items()]
+    }
+    
     return resultado
 
-#######################################################################################################################################
+# 4. Función UsersRecommend
+# def UsersRecommend( año : int ): Devuelve el top 3 de juegos MÁS recomendados por usuarios para el año dado. 
+# (reviews.recommend = True y comentarios positivos/neutrales)
+
+def UsersRecommend(anio):
+
+    df_games_tec = pd.read_parquet('df_games_tec.parquet')
+    df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet')
+
+    df_reviews_juegos = pd.merge(df_reviews_con_sa[['item_id', 'recommend','sentiment_analysis']], 
+                             df_games_tec[["item_id","app_name","release_year"]], on='item_id', how='inner')
+    
+    # Verificar si el año especificado está presente en el DataFrame
+    if anio not in df_reviews_juegos['release_year'].unique():
+        return "Año no encontrado en la base de datos."
+    
+    # Filtrar el DataFrame por el año especificado
+    df_anio = df_reviews_juegos[df_reviews_juegos['release_year'] == anio]
+    
+    # Filtrar solo las reseñas con recomendación positiva o neutral
+    df_recomendados = df_anio[(df_anio['recommend']) & (df_anio['sentiment_analysis'].isin([1, 2]))]
+    
+    # Contar las recomendaciones por juego
+    recomendados_por_juego = df_recomendados.groupby('app_name')['recommend'].sum().reset_index()
+    
+    # Ordenar los juegos por la cantidad de recomendaciones y obtener el top 3
+    top_3_juegos = recomendados_por_juego.nlargest(3, 'recommend')
+    
+    # Formatear el resultado en el formato de cadena de caracteres requerido
+    resultado = [{"Puesto " + str(i+1): juego} for i, juego in enumerate(top_3_juegos['app_name'])]
+    
+    return resultado
+
+# 4. Función UsersNotRecommend
+# def UsersNotRecommend( año : int ): Devuelve el top 3 de juegos MENOS recomendados por usuarios para el año dado. 
+# (reviews.recommend = False y comentarios negativos)
+
+def UsersNotRecommend(anio):
+
+    df_games_tec = pd.read_parquet('df_games_tec.parquet')
+    df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet')
+
+    df_reviews_juegos = pd.merge(df_reviews_con_sa[['item_id', 'recommend','sentiment_analysis']], 
+                             df_games_tec[["item_id","app_name","release_year"]], on='item_id', how='inner')
+    
+    # Verificar si el año especificado está presente en el DataFrame
+    if anio not in df_reviews_juegos['release_year'].unique():
+        return "Año no encontrado en la base de datos."
+    
+    # Filtrar el DataFrame por el año especificado
+    df_anio = df_reviews_juegos[df_reviews_juegos['release_year'] == anio]
+    
+    # Filtrar solo las reseñas con recomendación negativa
+    df_no_recomendados = df_anio[(~df_anio['recommend']) & (df_anio['sentiment_analysis'] == 0)]
+    
+    # Contar las no recomendaciones por juego
+    no_recomendados_por_juego = df_no_recomendados.groupby('app_name')['recommend'].count().reset_index()
+    
+    # Ordenar los juegos por la cantidad de no recomendaciones y obtener el top 3
+    top_3_juegos = no_recomendados_por_juego.nlargest(3, 'recommend')
+    
+    # Formatear el resultado en el formato de cadena de caracteres requerido
+    resultado = [{"Puesto " + str(i+1): juego} for i, juego in enumerate(top_3_juegos['app_name'])]
+    
+    return resultado
+
+# 5. Función Sentiment_Analysis
+# def sentiment_analysis( año : int ): Según el año de lanzamiento, se devuelve una lista con la cantidad de registros 
+# de reseñas de usuarios que se encuentren categorizados con un análisis de sentimiento.
+
+def sentiment_analysis(anio):
+
+    df_games_tec = pd.read_parquet('df_games_tec.parquet')
+    df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet')
+    
+    df_reviews_juegos = pd.merge(df_reviews_con_sa[['item_id', 'recommend','sentiment_analysis']], 
+                             df_games_tec[["item_id","app_name","release_year"]], on='item_id', how='inner')
+    
+    # Verificar si el año especificado está presente en el DataFrame
+    if anio not in df_reviews_juegos['release_year'].unique():
+        return "Año no encontrado en la base de datos."
+    
+    # Filtrar el DataFrame por el año especificado
+    df_anio = df_reviews_juegos[df_reviews_juegos['release_year'] == anio]
+    
+    # Contar la cantidad de registros para cada categoría de análisis de sentimiento
+    conteo_sentimientos = df_anio['sentiment_analysis'].value_counts()
+    
+    # Formatear el resultado en el formato requerido
+    resultado = {
+        "Negative": conteo_sentimientos.get(0, 0),
+        "Neutral": conteo_sentimientos.get(1, 0),
+        "Positive": conteo_sentimientos.get(2, 0)
+    }
+    
+    return resultado
+
+# 6. def recomendacion_juego( id de producto ): 
+# Ingresando el id de producto, deberíamos recibir una lista con 5 juegos recomendados similares al ingresado.
+
+def recomendacion_juego(item_id):
+
+    from sklearn.neighbors import NearestNeighbors
+    
+    df_sist_reco_v4 = pd.read_parquet('df_sist_reco_v4.parquet')
+
+    games_dummies = df_sist_reco_v4.drop(columns=['item_id', 'app_name'])
+
+    n_neighbors=6
+    nneighbors = NearestNeighbors(n_neighbors = n_neighbors, metric = 'cosine').fit(games_dummies)
+
+    # Extraer los vectores de características del juego seleccionado
+    game_eval = np.array(games_dummies.loc[item_id]).reshape(1, -1)
+    
+    # Obtener los índices de los juegos más similares
+    dif, ind = nneighbors.kneighbors(game_eval)
+    
+    # Lista para almacenar los juegos recomendados en formato string
+    juegos_recomendados = []
+    
+    # Juego seleccionado
+    juego_seleccionado = {"Juego Seleccionado": df_sist_reco_v4.loc[ind[0][0], 'app_name']}
+    juegos_recomendados.append(juego_seleccionado)
+    
+    # Juegos recomendados
+    for i in range(1, 6):  # Tomamos los 5 juegos recomendados
+        juego_recomendado = {"Juego Recomendado " + str(i): df_sist_reco_v4.loc[ind[0][i], 'app_name']}
+        juegos_recomendados.append(juego_recomendado)
+    
+    return juegos_recomendados
