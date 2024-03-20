@@ -12,7 +12,7 @@ async def root():
     return {"message": "Hello World"}
 
 @app.get('/GetPlayTimeGenre')
-def GetPlayTimeGenre(genero: str):
+async def GetPlayTimeGenre(genero: str):
     try:
         resultado = PlayTimeGenre(genero)
         return resultado
