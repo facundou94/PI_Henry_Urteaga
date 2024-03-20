@@ -16,10 +16,10 @@ def GetPlayTimeGenre(genero: str):
     resultado = str(PlayTimeGenre(genero))
     return resultado
 
-# @app.get('/developer')
-# def developer(developer: str):
-#     resultado = funciones.developer(developer)
-#     return resultado
+@app.get('/UserData')
+def UserData(user_id: str):
+     resultado = userdata2(user_id)
+     return resultado
 
 # @app.get('/UserForGenre')
 # def UserForGenre(genero: str):
