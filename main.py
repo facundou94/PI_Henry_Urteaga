@@ -3,18 +3,18 @@
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI
-from funciones import PlayTimeGenre
+from funciones import UsersRecommend
 
 app = FastAPI()
 
-#@app.get("/")
-#async def root():
-#    return {"message": "Hello World"}
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
 
-@app.get('/')
-def root():
-    resultado = PlayTimeGenre("Action")
-    return resultado
+@app.get('/GetUsersRecommend')
+def GetUsersRecommend(anio: int):
+        resultado = UsersRecommend(anio)
+        return resultado
 
 # @app.get('/UserForGenre')
 # def UserForGenre(genero: str):
