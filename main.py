@@ -7,17 +7,15 @@ from funciones import PlayTimeGenre
 
 app = FastAPI()
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+#@app.get("/")
+#async def root():
+#    return {"message": "Hello World"}
 
-@app.get('/GetPlayTimeGenre')
-async def GetPlayTimeGenre(genero: str):
-    try:
-        resultado = PlayTimeGenre(genero)
-        return resultado
-    except Exception as e:
-        return f"Error al procesar la solicitud: {str(e)}"
+@app.get('/')
+def root():
+    resultado = PlayTimeGenre("Action")
+    return resultado
+
 # @app.get('/UserForGenre')
 # def UserForGenre(genero: str):
 #     resultado = funciones.UserForGenre(genero)
