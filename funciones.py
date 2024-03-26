@@ -17,25 +17,18 @@ from sklearn.neighbors import NearestNeighbors
 def PlayTimeGenre(genero):
     try:
         # Cargar solo las columnas necesarias de los archivos parquet
-        df_games_genres = pd.read_parquet('df_games_genres.parquet')
-        df_items = pd.read_parquet('df_items.parquet', columns=["item_id", "playtime_forever"])
         df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["app_name", "item_id", "release_year"])
+        df_games_genres = pd.read_parquet('df_games_genres.parquet', columns=["item_id", genero])
+        df_items = pd.read_parquet('df_items.parquet', columns=["item_id", "playtime_forever"])
     except FileNotFoundError:
         return "Archivo no encontrado."
     
-    # Lista de géneros disponibles
-    generos_disponibles = ['Utilities', 'Racing', 'Massively Multiplayer', 'Sports', 'Action', 
-                           'Audio Production', 'Indie', 'Web Publishing', 'RPG', 'Photo Editing', 
-                           'Casual', 'Software Training', 'Animation & Modeling', 
-                           'Design & Illustration', 'Simulation', 'Adventure', 'Early Access', 
-                           'Video Production', 'Education', 'Accounting', 'Free to Play', 'Strategy']
-    
     # Verificar si el género especificado existe en la base de datos
     if genero not in df_games_genres.columns:
-        return f"No se encontró el género '{genero}' en la base de datos. Géneros disponibles: {', '.join(generos_disponibles)}"
+        return f"No se encontró el género '{genero}' en la base de datos."
     
     # Utilizar las columnas de género como índices booleanos para filtrar más rápido
-    df_genero_especifico = df_games_genres[df_games_genres[genero]]
+    df_genero_especifico = df_games_genres[df_games_genres[genero] == 1]
     
     # Verificar si no hay datos para el género especificado
     if df_genero_especifico.empty:
