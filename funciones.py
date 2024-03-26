@@ -15,13 +15,6 @@ from sklearn.neighbors import NearestNeighbors
     # Uso de métodos integrados de pandas: Utilizar los métodos integrados de pandas para calcular sumas y encontrar el año con la mayor cantidad de horas jugadas.
 
 def PlayTimeGenre(genero):
-    try:
-        # Cargar solo las columnas necesarias de los archivos parquet
-        df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["app_name", "item_id", "release_year"])
-        df_games_genres = pd.read_parquet('df_games_genres.parquet', columns=["item_id", genero])
-        df_items = pd.read_parquet('df_items.parquet', columns=["item_id", "playtime_forever"])
-    except FileNotFoundError:
-        return "Archivo no encontrado."
     
     # Lista de géneros disponibles
     generos_disponibles = ['Utilities', 'Racing', 'Massively Multiplayer', 'Sports', 'Action', 
@@ -34,6 +27,14 @@ def PlayTimeGenre(genero):
     # Verificar si el género especificado existe en el DataFrame df_games_genres
     if genero not in generos_disponibles:
         return f"No se encontró el género '{genero}' en la base de datos. Géneros disponibles: {', '.join(generos_disponibles)}"
+    
+    try:
+        # Cargar solo las columnas necesarias de los archivos parquet
+        df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["app_name", "item_id", "release_year"])
+        df_games_genres = pd.read_parquet('df_games_genres.parquet', columns=["item_id", genero])
+        df_items = pd.read_parquet('df_items.parquet', columns=["item_id", "playtime_forever"])
+    except FileNotFoundError:
+        return "Archivo no encontrado."
     
     # Utilizar las columnas de género como índices booleanos para filtrar más rápido
     df_genero_especifico = df_games_genres[df_games_genres[genero] == 1]
