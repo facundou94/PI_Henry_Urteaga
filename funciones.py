@@ -40,8 +40,8 @@ def PlayTimeGenre(genero):
     df_genero_especifico = df_games_genres[df_games_genres[genero] == 1]
     
     # Verificar si no hay datos para el género especificado
-    if df_genero_especifico.empty:
-        return f"No hay datos para el género '{genero}'."
+    #if df_genero_especifico.empty:
+    #   return f"No hay datos para el género '{genero}'."
     
     # Combinar los DataFrames relevantes
     merged_df = pd.merge(df_games_tec, df_genero_especifico, on='item_id', how='inner')
