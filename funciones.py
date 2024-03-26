@@ -60,12 +60,13 @@ def PlayTimeGenre(genero):
 # def UserForGenre( genero : str ): Debe devolver el usuario que acumula más horas jugadas para el género dado y una lista de la acumulación de horas jugadas por año.
 # Ejemplo de retorno: {"Usuario con más horas jugadas para Género X" : us213ndjss09sdf, "Horas jugadas":[{Año: 2013, Horas: 203}, {Año: 2012, Horas: 100}, {Año: 2011, Horas: 23}]}
 
+# OPTIMIZACIÓN HECHA:
+    # Carga selectiva de datos: Cargar solo las columnas necesarias de los archivos parquet.
+    # Utilización eficiente de la unión de DataFrames: Minimizar la cantidad de uniones redundantes y fusionar los DataFrames solo cuando sea necesario.
+    # Uso de métodos integrados de pandas: Utilizar los métodos de pandas para realizar cálculos y operaciones de agrupación de manera más eficiente.
+
 def UserForGenre(genero):
-
-    df_games_genres = pd.read_parquet('df_games_genres.parquet')
-    df_items = pd.read_parquet('df_items.parquet')
-    df_games_tec = pd.read_parquet('df_games_tec.parquet')
-
+    
     # Lista de géneros disponibles
     generos_disponibles = ['Utilities', 'Racing', 'Massively Multiplayer', 'Sports', 'Action', 
                            'Audio Production', 'Indie', 'Web Publishing', 'RPG', 'Photo Editing', 
@@ -73,34 +74,45 @@ def UserForGenre(genero):
                            'Design & Illustration', 'Simulation', 'Adventure', 'Early Access', 
                            'Video Production', 'Education', 'Accounting', 'Free to Play', 'Strategy']
     
-    
-    # Verificar si el género especificado existe en el DataFrame df_games_genres
+    # Verificar si el género especificado existe en la base de datos
     if genero not in df_games_genres.columns:
         return f"No se encontró el género '{genero}' en la base de datos. Géneros disponibles: {', '.join(generos_disponibles)}"
     
-    # Filtro inicialmente los juegos del genero seleccionado
-    df_genre = df_games_genres[df_games_genres[genero] == True]
+    try:
+        # Cargar solo las columnas necesarias de los archivos parquet
+        df_games_genres = pd.read_parquet('df_games_genres.parquet', columns=["item_id", genero])
+        df_items = pd.read_parquet('df_items.parquet', columns=["user_id", "item_id", "playtime_forever"])
+        df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["item_id", "release_year"])
+    except FileNotFoundError:
+        return "Archivo no encontrado."
     
-    # Filtro solo jugadores que hayan jugado juegos de este género
-    df_func_3_aux = pd.merge(df_items[["user_id","item_id",'playtime_forever']], df_genre[["item_id"]], on='item_id', how='inner')
-    df_func_3 = pd.merge(df_func_3_aux, df_games_tec[["item_id",'release_year']], on='item_id', how='inner')
-
+    # Filtro inicialmente los juegos del género seleccionado
+    df_genre = df_games_genres[df_games_genres[genero]]
+    
+    # Verificar si no hay datos para el género especificado
+    if df_genre.empty:
+        return f"No hay datos para el género '{genero}'."
+    
+    # Fusionar los DataFrames necesarios
+    df_merged = pd.merge(df_items, df_genre[['item_id']], on='item_id', how='inner')
+    df_merged = pd.merge(df_merged, df_games_tec, on='item_id', how='inner')
+    
     # Calcula la suma total de playtime_forever para cada usuario
-    suma_playtime_por_usuario = df_func_3.groupby('user_id')['playtime_forever'].sum()
-
+    suma_playtime_por_usuario = df_merged.groupby('user_id')['playtime_forever'].sum()
+    
     # Encuentra el usuario con la mayor suma de playtime_forever
     usuario_max_playtime = suma_playtime_por_usuario.idxmax()
-
+    
     # Filtra el DataFrame original para obtener solo las filas asociadas con ese usuario
-    df_usuario_max_playtime = df_func_3[df_func_3['user_id'] == usuario_max_playtime]
-
+    df_usuario_max_playtime = df_merged[df_merged['user_id'] == usuario_max_playtime]
+    
     # Agrupa las horas jugadas por año para ese usuario
     horas_por_anio = df_usuario_max_playtime.groupby('release_year')['playtime_forever'].sum()
-
+    
     # Construye el diccionario con el formato deseado
     resultado = {
-    f"Usuario con más horas jugadas para Género {genero}": usuario_max_playtime,
-    "Horas jugadas": [{"Año": año, "Horas": horas} for año, horas in horas_por_anio.items()]
+        f"Usuario con más horas jugadas para Género {genero}": usuario_max_playtime,
+        "Horas jugadas": [{"Año": año, "Horas": horas} for año, horas in horas_por_anio.items()]
     }
     
     return resultado
