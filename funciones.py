@@ -128,7 +128,7 @@ def UsersRecommend(anio):
     recomendados_por_juego.columns = ['app_name', 'recommend_count']
     
     # Ordenar los juegos por la cantidad de recomendaciones y obtener el top 3
-    top_3_juegos = recomendados_por_juego.nlargest(3, 'recommend')
+    top_3_juegos = recomendados_por_juego.nlargest(3, 'recommend_count')
     
     # Formatear el resultado en el formato de cadena de caracteres requerido
     resultado = [{"Puesto " + str(i+1): juego} for i, juego in enumerate(top_3_juegos['app_name'])]
