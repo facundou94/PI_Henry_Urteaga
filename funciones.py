@@ -124,7 +124,7 @@ def UsersRecommend(anio):
     df_recomendados = df_anio[(df_anio['recommend']) & (df_anio['sentiment_analysis'].isin([1, 2]))]
     
     # Contar las recomendaciones por juego
-    recomendados_por_juego = df_recomendados.['app_name'].value_counts().reset_index()
+    recomendados_por_juego = df_recomendados['app_name'].value_counts().reset_index()
     recomendados_por_juego.columns = ['app_name', 'recommend_count']
     
     # Ordenar los juegos por la cantidad de recomendaciones y obtener el top 3
