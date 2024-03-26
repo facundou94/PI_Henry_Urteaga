@@ -9,41 +9,42 @@ from sklearn.neighbors import NearestNeighbors
 # def PlayTimeGenre( genero : str ): Debe devolver año con mas horas jugadas para dicho género.
 # Ejemplo de retorno: {"Año de lanzamiento con más horas jugadas para Género X" : 2013}
 
+# OPTIMIZACIÓN HECHA:
+    # Carga de datos selectiva: Cargar solo las columnas necesarias de los archivos parquet para reducir el tiempo de carga y el uso de memoria.
+    # Utilizar columnas de género como índices booleanos: Convertir las columnas de género en índices booleanos para evitar iterar sobre todas las columnas cada vez que se llama a la función.
+    # Uso de métodos integrados de pandas: Utilizar los métodos integrados de pandas para calcular sumas y encontrar el año con la mayor cantidad de horas jugadas.
+
 def PlayTimeGenre(genero):
-
-    df_games_tec = pd.read_parquet('df_games_tec.parquet')
-    df_games_genres = pd.read_parquet('df_games_genres.parquet')
-    df_items = pd.read_parquet('df_items.parquet')
-
-    merged_df_1 = pd.merge(df_games_tec[["app_name","item_id","release_year"]], df_games_genres, on='item_id', how='inner')
-    merged_df_2 = pd.merge(merged_df_1, df_items[["item_id","playtime_forever"]], on='item_id', how='inner')
-
-    # Lista de géneros disponibles
-    generos_disponibles = ['Utilities', 'Racing', 'Massively Multiplayer', 'Sports', 'Action', 
-                           'Audio Production', 'Indie', 'Web Publishing', 'RPG', 'Photo Editing', 
-                           'Casual', 'Software Training', 'Animation & Modeling', 
-                           'Design & Illustration', 'Simulation', 'Adventure', 'Early Access', 
-                           'Video Production', 'Education', 'Accounting', 'Free to Play', 'Strategy']
+    try:
+        # Cargar solo las columnas necesarias de los archivos parquet
+        df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["app_name", "item_id", "release_year"])
+        df_games_genres = pd.read_parquet('df_games_genres.parquet', columns=["item_id", genero])
+        df_items = pd.read_parquet('df_items.parquet', columns=["item_id", "playtime_forever"])
+    except FileNotFoundError:
+        return "Archivo no encontrado."
     
-    # Verifica si el género especificado existe en la base de datos
-    if genero not in merged_df_2.columns:
-        return f"No se encontró el género '{genero}' en la base de datos. Géneros disponibles: {', '.join(generos_disponibles)}"
+    # Verificar si el género especificado existe en la base de datos
+    if genero not in df_games_genres.columns:
+        return f"No se encontró el género '{genero}' en la base de datos."
     
-    # Filtra el DataFrame por el género especificado
-    df_genero_especifico = merged_df_2[merged_df_2[genero] == 1]
+    # Utilizar las columnas de género como índices booleanos para filtrar más rápido
+    df_genero_especifico = df_games_genres[df_games_genres[genero] == 1]
     
-    # Verifica si no hay datos para el género especificado
+    # Verificar si no hay datos para el género especificado
     if df_genero_especifico.empty:
-        return f"No hay datos para el género '{genero}'. Géneros disponibles: {', '.join(generos_disponibles)}"
+        return f"No hay datos para el género '{genero}'."
+    
+    # Combinar los DataFrames relevantes
+    merged_df = pd.merge(df_games_tec, df_genero_especifico, on='item_id', how='inner')
+    merged_df = pd.merge(merged_df, df_items, on='item_id', how='inner')
     
     # Agrupar por año de lanzamiento y sumar las horas jugadas
-    df_horas_jugadas_por_ano = df_genero_especifico.groupby('release_year')['playtime_forever'].sum().reset_index()
+    df_horas_jugadas_por_ano = merged_df.groupby('release_year')['playtime_forever'].sum()
     
     # Encontrar el año con la mayor cantidad de horas jugadas acumuladas
-    max_total_playtime_year = df_horas_jugadas_por_ano.loc[df_horas_jugadas_por_ano['playtime_forever'].idxmax(), 'release_year']
+    max_total_playtime_year = df_horas_jugadas_por_ano.idxmax()
     
-    string_return = f"{{'Año de lanzamiento con más horas jugadas para Género {genero}': {max_total_playtime_year}}}"
-    return string_return
+    return f"Año de lanzamiento con más horas jugadas para Género {genero}: {max_total_playtime_year}"
 
 # 3. Función UserForGenre
 
