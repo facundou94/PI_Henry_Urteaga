@@ -132,31 +132,38 @@ def UsersRecommend(anio):
 # def UsersNotRecommend( año : int ): Devuelve el top 3 de juegos MENOS recomendados por usuarios para el año dado. 
 # (reviews.recommend = False y comentarios negativos)
 
+# OPTIMIZACIÓN HECHA:
+    # Carga de datos optimizada: Solo se cargan las columnas necesarias de los archivos parquet para reducir el tiempo de carga y la memoria utilizada.
+    # Manejo de excepciones mejorado: Se añadió un manejo de excepciones para manejar el caso en que los archivos parquet no sean encontrados.
+    # Optimización de conteo de valores: Se utilizó value_counts() en lugar de groupby para contar las no recomendaciones por juego, lo que es más eficiente.
+
 def UsersNotRecommend(anio):
-
-    df_games_tec = pd.read_parquet('df_games_tec.parquet')
-    df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet')
-
-    df_reviews_juegos = pd.merge(df_reviews_con_sa[['item_id', 'recommend','sentiment_analysis']], 
-                             df_games_tec[["item_id","app_name","release_year"]], on='item_id', how='inner')
+    try:
+        # Cargar solo las columnas necesarias de los archivos parquet
+        df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["item_id", "app_name", "release_year"])
+        df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet', columns=["item_id", "recommend", "sentiment_analysis"])
+    except FileNotFoundError:
+        return "Archivo no encontrado."
     
-    # Verificar si el año especificado está presente en el DataFrame
-    if anio not in df_reviews_juegos['release_year'].unique():
-        return "Año no encontrado en la base de datos."
-    
-    # Filtrar el DataFrame por el año especificado
+    # Filtrar solo las reseñas del año especificado
+    df_reviews_juegos = df_reviews_con_sa.merge(df_games_tec, on='item_id', how='inner')
     df_anio = df_reviews_juegos[df_reviews_juegos['release_year'] == anio]
     
-    # Filtrar solo las reseñas con recomendación negativa
+    # Verificar si hay datos para el año especificado
+    if df_anio.empty:
+        return "No hay reseñas para el año especificado."
+    
+    # Filtrar solo las reseñas con recomendación negativa y sentimiento neutro
     df_no_recomendados = df_anio[(~df_anio['recommend']) & (df_anio['sentiment_analysis'] == 0)]
     
     # Contar las no recomendaciones por juego
-    no_recomendados_por_juego = df_no_recomendados.groupby('app_name')['recommend'].count().reset_index()
+    no_recomendados_por_juego = df_no_recomendados['app_name'].value_counts().reset_index()
+    no_recomendados_por_juego.columns = ['app_name', 'recommend_count']
     
-    # Ordenar los juegos por la cantidad de no recomendaciones y obtener el top 3
-    top_3_juegos = no_recomendados_por_juego.nlargest(3, 'recommend')
+    # Obtener el top 3 de juegos con más no recomendaciones
+    top_3_juegos = no_recomendados_por_juego.nlargest(3, 'recommend_count')
     
-    # Formatear el resultado en el formato de cadena de caracteres requerido
+    # Formatear el resultado en el formato de lista de diccionarios
     resultado = [{"Puesto " + str(i+1): juego} for i, juego in enumerate(top_3_juegos['app_name'])]
     
     return resultado

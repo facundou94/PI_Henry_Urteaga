@@ -7,11 +7,6 @@ import funciones
 
 app = FastAPI()
 
-@app.get('/GetUsersRecommend')
-def GetUsersRecommend(anio: int):
-        resultado = funciones.UsersRecommend(anio)
-        return resultado
-
 @app.get('/GetPlayTimeGenre')
 def GetPlayTimeGenre(genero: str):
      resultado = funciones.PlayTimeGenre(genero)
@@ -21,11 +16,6 @@ def GetPlayTimeGenre(genero: str):
 def GetUserForGenre(genero: str):
      resultado = funciones.UserForGenre(genero)
      return resultado
-
-# @app.get('/developer_reviews_analysis')
-# def developer_reviews_analysis(desarrolladora: int):
-#     resultado = funciones.developer_reviews_analysis(desarrolladora)
-#     return resultado
 
 @app.get('/GetUsersRecommend')
 def GetUsersRecommend(anio: int):
