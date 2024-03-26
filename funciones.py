@@ -23,9 +23,17 @@ def PlayTimeGenre(genero):
     except FileNotFoundError:
         return "Archivo no encontrado."
     
-    # Verificar si el género especificado existe en la base de datos
-    if genero not in df_games_genres.columns:
-        return f"No se encontró el género '{genero}' en la base de datos."
+    # Lista de géneros disponibles
+    generos_disponibles = ['Utilities', 'Racing', 'Massively Multiplayer', 'Sports', 'Action', 
+                           'Audio Production', 'Indie', 'Web Publishing', 'RPG', 'Photo Editing', 
+                           'Casual', 'Software Training', 'Animation & Modeling', 
+                           'Design & Illustration', 'Simulation', 'Adventure', 'Early Access', 
+                           'Video Production', 'Education', 'Accounting', 'Free to Play', 'Strategy']
+    
+    
+    # Verificar si el género especificado existe en el DataFrame df_games_genres
+    if genero not in generos_disponibles:
+        return f"No se encontró el género '{genero}' en la base de datos. Géneros disponibles: {', '.join(generos_disponibles)}"
     
     # Utilizar las columnas de género como índices booleanos para filtrar más rápido
     df_genero_especifico = df_games_genres[df_games_genres[genero] == 1]
