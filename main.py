@@ -3,48 +3,49 @@
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI
-from funciones import UsersRecommend
+import funciones
 
 app = FastAPI()
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
 @app.get('/GetUsersRecommend')
 def GetUsersRecommend(anio: int):
-        resultado = UsersRecommend(anio)
+        resultado = funciones.UsersRecommend(anio)
         return resultado
 
-# @app.get('/UserForGenre')
-# def UserForGenre(genero: str):
-#     resultado = funciones.UserForGenre(genero)
-#     return resultado
+@app.get('/GetPlayTimeGenre')
+def GetPlayTimeGenre(genero: str):
+     resultado = funciones.PlayTimeGenre(genero)
+     return resultado
 
-# @app.get('/best_developer_year')
-# def best_developer_year(year: int):
-#     resultado = funciones.best_developer_year(year)
-#     return resultado
+@app.get('/GetUserForGenre')
+def GetUserForGenre(genero: str):
+     resultado = funciones.UserForGenre(genero)
+     return resultado
 
 # @app.get('/developer_reviews_analysis')
 # def developer_reviews_analysis(desarrolladora: int):
 #     resultado = funciones.developer_reviews_analysis(desarrolladora)
 #     return resultado
 
-@app.get('/probar_librerias')
-def probar_librerias():
-    datos = {
-    'Nombre': ['Juan', np.nan, 'Pedro', 'Ana'],
-    'Edad': [np.nan, 30, 35, 40],
-    }
+@app.get('/GetUsersRecommend')
+def GetUsersRecommend(anio: int):
+    resultado = funciones.UsersRecommend(anio)
+    return resultado
 
-    datos_str = str(datos)
-    
-    return datos_str
+@app.get('/GetUsersNotRecommend')
+def GetUsersNotRecommend(anio: int):
+    resultado = funciones.UsersNotRecommend(anio)
+    return resultado
 
-@app.get('/suma_sencilla')
-def suma_sencilla(primer_valor : int, segundo_valor : int):
-    suma = primer_valor + segundo_valor
-    return suma 
+@app.get('/GetSentimentAnalysis')
+def GetSentimentAnalysis(anio: int):
+    resultado = funciones.sentiment_analysis(anio)
+    return resultado
+
+@app.get('/recomendacion_juego')
+def recomendacion_juego(item_id: str):
+    resultado = funciones.recomendacion_juego(item_id)
+    return resultado
+
 
 ########################################################################################################################
