@@ -86,15 +86,12 @@ def UserForGenre(genero):
     except FileNotFoundError:
         return "Archivo no encontrado."
     
-    # Filtro inicialmente los juegos del género seleccionado
-    df_genre = df_games_genres[df_games_genres[genero]]
-    
     # Verificar si no hay datos para el género especificado
-    if df_genre.empty:
+    if df_games_genres.empty:
         return f"No hay datos para el género '{genero}'."
     
     # Fusionar los DataFrames necesarios
-    df_merged = pd.merge(df_items, df_genre[['item_id']], on='item_id', how='inner')
+    df_merged = pd.merge(df_items, df_games_genres[['item_id']], on='item_id', how='inner')
     df_merged = pd.merge(df_merged, df_games_tec, on='item_id', how='inner')
     
     # Calcula la suma total de playtime_forever para cada usuario
