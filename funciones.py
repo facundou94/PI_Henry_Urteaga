@@ -46,6 +46,11 @@ def PlayTimeGenre(genero):
     # Combinar los DataFrames relevantes
     merged_df = pd.merge(df_games_tec, df_genero_especifico, on='item_id', how='inner')
     merged_df = pd.merge(merged_df, df_items, on='item_id', how='inner')
+
+    # Eliminar los DataFrames cargados una vez realizada la fusión
+    del df_games_tec
+    del df_games_genres
+    del df_items
     
     # Agrupar por año de lanzamiento y sumar las horas jugadas
     df_horas_jugadas_por_ano = merged_df.groupby('release_year')['playtime_forever'].sum()
