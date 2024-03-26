@@ -75,7 +75,7 @@ def UserForGenre(genero):
                            'Video Production', 'Education', 'Accounting', 'Free to Play', 'Strategy']
     
     # Verificar si el género especificado existe en la base de datos
-    if genero not in df_games_genres.columns:
+    if genero not in generos_disponibles:
         return f"No se encontró el género '{genero}' en la base de datos. Géneros disponibles: {', '.join(generos_disponibles)}"
     
     try:
