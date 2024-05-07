@@ -9,11 +9,6 @@ from sklearn.neighbors import NearestNeighbors
 # def PlayTimeGenre( genero : str ): Debe devolver año con mas horas jugadas para dicho género.
 # Ejemplo de retorno: {"Año de lanzamiento con más horas jugadas para Género X" : 2013}
 
-# OPTIMIZACIÓN HECHA:
-    # Carga de datos selectiva: Cargar solo las columnas necesarias de los archivos parquet para reducir el tiempo de carga y el uso de memoria.
-    # Utilizar columnas de género como índices booleanos: Convertir las columnas de género en índices booleanos para evitar iterar sobre todas las columnas cada vez que se llama a la función.
-    # Uso de métodos integrados de pandas: Utilizar los métodos integrados de pandas para calcular sumas y encontrar el año con la mayor cantidad de horas jugadas.
-
 def PlayTimeGenre(genero):
     
     # Lista de géneros disponibles
@@ -30,8 +25,8 @@ def PlayTimeGenre(genero):
     
     try:
         # Cargar solo las columnas necesarias de los archivos parquet
-        df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["app_name", "item_id", "release_year"])
         df_games_genres = pd.read_parquet('df_games_genres.parquet', columns=["item_id", genero])
+        df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["app_name", "item_id", "release_year"])
         df_items = pd.read_parquet('df_items.parquet', columns=["item_id", "playtime_forever"])
     except FileNotFoundError:
         return "Archivo no encontrado."
@@ -65,11 +60,6 @@ def PlayTimeGenre(genero):
 # def UserForGenre( genero : str ): Debe devolver el usuario que acumula más horas jugadas para el género dado y una lista de la acumulación de horas jugadas por año.
 # Ejemplo de retorno: {"Usuario con más horas jugadas para Género X" : us213ndjss09sdf, "Horas jugadas":[{Año: 2013, Horas: 203}, {Año: 2012, Horas: 100}, {Año: 2011, Horas: 23}]}
 
-# OPTIMIZACIÓN HECHA:
-    # Carga selectiva de datos: Cargar solo las columnas necesarias de los archivos parquet.
-    # Utilización eficiente de la unión de DataFrames: Minimizar la cantidad de uniones redundantes y fusionar los DataFrames solo cuando sea necesario.
-    # Uso de métodos integrados de pandas: Utilizar los métodos de pandas para realizar cálculos y operaciones de agrupación de manera más eficiente.
-
 def UserForGenre(genero):
     
     # Lista de géneros disponibles
@@ -86,8 +76,18 @@ def UserForGenre(genero):
     try:
         # Cargar solo las columnas necesarias de los archivos parquet
         df_games_genres = pd.read_parquet('df_games_genres.parquet', columns=["item_id", genero])
+        df_games_genres = df_games_genres[df_games_genres[genero] == 1]
+        
+        # Obtener los item_id relevantes
+        relevant_item_ids = df_games_genres['item_id'].unique()
+        
+        # Filtrar df_items y df_games_tec
         df_items = pd.read_parquet('df_items.parquet', columns=["user_id", "item_id", "playtime_forever"])
+        df_items = df_items[df_items['item_id'].isin(relevant_item_ids)]
+        
         df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["item_id", "release_year"])
+        df_games_tec = df_games_tec[df_games_tec['item_id'].isin(relevant_item_ids)]
+        
     except FileNotFoundError:
         return "Archivo no encontrado."
     
@@ -97,7 +97,10 @@ def UserForGenre(genero):
     
     # Fusionar los DataFrames necesarios
     df_merged = pd.merge(df_items, df_games_genres[['item_id']], on='item_id', how='inner')
+    del df_items, df_games_genres  # Liberar memoria
+    
     df_merged = pd.merge(df_merged, df_games_tec, on='item_id', how='inner')
+    del df_games_tec  # Liberar memoria
     
     # Calcula la suma total de playtime_forever para cada usuario
     suma_playtime_por_usuario = df_merged.groupby('user_id')['playtime_forever'].sum()
@@ -122,11 +125,6 @@ def UserForGenre(genero):
 # 4. Función UsersRecommend
 # def UsersRecommend( año : int ): Devuelve el top 3 de juegos MÁS recomendados por usuarios para el año dado. 
 # (reviews.recommend = True y comentarios positivos/neutrales)
-
-# OPTIMIZACIÓN HECHA:
-    # Carga de datos optimizada: Solo se cargan las columnas necesarias de los archivos parquet para reducir el tiempo de carga y la memoria utilizada.
-    # Manejo de excepciones mejorado: Se añadió un manejo de excepciones para manejar el caso en que los archivos parquet no sean encontrados.
-    # Optimización de conteo de valores: Se utilizó value_counts() en lugar de groupby para contar las no recomendaciones por juego, lo que es más eficiente.
 
 def UsersRecommend(anio):
     try:
@@ -162,11 +160,6 @@ def UsersRecommend(anio):
 # 4. Función UsersNotRecommend
 # def UsersNotRecommend( año : int ): Devuelve el top 3 de juegos MENOS recomendados por usuarios para el año dado. 
 # (reviews.recommend = False y comentarios negativos)
-
-# OPTIMIZACIÓN HECHA:
-    # Carga de datos optimizada: Solo se cargan las columnas necesarias de los archivos parquet para reducir el tiempo de carga y la memoria utilizada.
-    # Manejo de excepciones mejorado: Se añadió un manejo de excepciones para manejar el caso en que los archivos parquet no sean encontrados.
-    # Optimización de conteo de valores: Se utilizó value_counts() en lugar de groupby para contar las no recomendaciones por juego, lo que es más eficiente.
 
 def UsersNotRecommend(anio):
     try:
