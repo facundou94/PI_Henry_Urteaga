@@ -74,28 +74,28 @@ En esta etapa se realiza el análisis exploratorio general, lo cual servirá par
    <em>Figura 3: Violin Plot de precio de venta de los juegos por año de lanzamiento </em>
 </p>
 
-p align="center">
+<p align="center">
    <img src="Imagenes/4_cantidad_juegos.jpg" width="400">
 </p>
 <p align="center">
    <em>Figura 4: Cantidad de juegos lanzados a la plataforma por año </em>
 </p>
 
-p align="center">
+<p align="center">
    <img src="Imagenes/6_proporcion_tag.jpg" width="400">
 </p>
 <p align="center">
    <em>Figura 5: Proporciones de tags </em>
 </p>
 
-p align="center">
+<p align="center">
    <img src="Imagenes/6_proporcion_spec.jpg" width="400">
 </p>
 <p align="center">
    <em>Figura 6: Proporciones de specs </em>
 </p>
 
-p align="center">
+<p align="center">
    <img src="Imagenes/6_proporcion_genres.jpg" width="400">
 </p>
 <p align="center">
