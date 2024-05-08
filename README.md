@@ -57,14 +57,52 @@ En este proceso, se lleva a cabo el desanidado de columnas específicas que cont
    <em>Figura 2: Densidad de opiniones positivas totales (de 0 a 100 %) </em>
 </p>
 
-Donde
+## 3 EDA
 
-* _x: numeración_
-* _alg: algoritmos utilizados, supervisados (s) o no supervisados (ns)_
-* _muestras: cantidad de muestras, indicando si se usan las réplicas biológicas (m122) o las muestras ya promediadas (m51)_
-* _dias: días utilizados para el análisis, todos (d1247) o solo días 2 y 4 (d24)_
+</p>
+En esta etapa se realiza el análisis exploratorio general, lo cual servirá para entender el comportamiento y el contexto de los datos antes de realizar las funciones y algoritmos posteriores. Dentro de esta etapa se destaca:
+* La evolución de la distribución de precios segun las fechas de lanzamiento, donde se observa una tendencia de disminución del promedio de los precios en el paso de los años, pero a su vez por lógica los juegos más caros son los más actuales aunque sean los menos (Figura 3).
+* El crecimiento exponencial (Se osberva como un crecimiento lineal ya que es el logaritmo de la frecuencia) de lanzamiento de juegos en el paso de los años (Figura 4).
+* La cantidad de items por usuario, donde la mayoría contiene entre 10 y 100 items (Figura 5).
+* Las etiquetas mas preponderantes de tags, specs y genres (Figuras 6, 7 y 8)
+</p>
 
-## Pre-procesamiento
+<p align="center">
+   <img src="Imagenes/3_violin_precios.jpg" width="400">
+</p>
+<p align="center">
+   <em>Figura 3: Violin Plot de precio de venta de los juegos por año de lanzamiento </em>
+</p>
+
+p align="center">
+   <img src="Imagenes/4_cantidad_juegos.jpg" width="400">
+</p>
+<p align="center">
+   <em>Figura 4: Cantidad de juegos lanzados a la plataforma por año </em>
+</p>
+
+p align="center">
+   <img src="Imagenes/6_proporcion_tag.jpg" width="400">
+</p>
+<p align="center">
+   <em>Figura 5: Proporciones de tags </em>
+</p>
+
+p align="center">
+   <img src="Imagenes/6_proporcion_spec.jpg" width="400">
+</p>
+<p align="center">
+   <em>Figura 6: Proporciones de specs </em>
+</p>
+
+p align="center">
+   <img src="Imagenes/6_proporcion_genres.jpg" width="400">
+</p>
+<p align="center">
+   <em>Figura 7: Proporciones de genres </em>
+</p>
+
+
 
 ### Archivo: 1_preprocesamiento.R
 
