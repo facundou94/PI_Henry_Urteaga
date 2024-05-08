@@ -216,33 +216,26 @@ def sentiment_analysis(anio):
 # Ingresando el id de producto, deberíamos recibir una lista con 5 juegos recomendados similares al ingresado.
 
 def recomendacion_juego(id):
-
-    #from sklearn.neighbors import NearestNeighbors
-    
+    # Carga de datos
     df_sist_reco_v4 = pd.read_parquet('df_sist_reco_v4.parquet')
-
     games_dummies = df_sist_reco_v4.drop(columns=['item_id', 'app_name'])
     games_id_names = df_sist_reco_v4[['item_id', 'app_name']]
 
+    # Entrenamiento del modelo
     n_neighbors = 6
-    nneighbors = NearestNeighbors(n_neighbors = n_neighbors, metric = 'cosine').fit(games_dummies)
+    nneighbors = NearestNeighbors(n_neighbors=n_neighbors, metric='cosine').fit(games_dummies)
 
-    ### 5.9 TEST de modelo 
-
-    item_busqueda = id
-    index = games_dummies.index[games_id_names['item_id'] == item_busqueda][0]
-    #print(games_id_names["app_name"].iloc[index])
-
-    game_eval = np.array(games_dummies.iloc[index]).reshape(1,-1)
+    # Evaluación del juego
+    index = games_dummies.index[games_id_names['item_id'] == id][0]
+    game_eval = np.array(games_dummies.iloc[index]).reshape(1, -1)
     dif, ind = nneighbors.kneighbors(game_eval)
-    
-    # Juegos recomendados
-    juegos_recomendados = { "Juegos recomendados:"
-        "# 1 ": games_id_names.at[ind[0][1], "app_name"],
-        "# 2": games_id_names.at[ind[0][2], "app_name"],
-        "# 3": games_id_names.at[ind[0][3], "app_name"],
-        "# 4": games_id_names.at[ind[0][4], "app_name"],
-        "# 5": games_id_names.at[ind[0][5], "app_name"],
-    }
-    
-    return juegos_recomendados
+
+    # Construir la cadena de juegos recomendados
+    juegos_recomendados_str = ("Juegos recomendados:\n" +
+                                "# 1: " + games_id_names.at[ind[0][1], "app_name"] + "\n" +
+                                "# 2: " + games_id_names.at[ind[0][2], "app_name"] + "\n" +
+                                "# 3: " + games_id_names.at[ind[0][3], "app_name"] + "\n" +
+                                "# 4: " + games_id_names.at[ind[0][4], "app_name"] + "\n" +
+                                "# 5: " + games_id_names.at[ind[0][5], "app_name"])
+
+    return juegos_recomendados_str
