@@ -128,7 +128,7 @@ Para realizar el análisis de sentimientos, se emplea la biblioteca NLTK en la e
 Se realiza un sistema de recomendación basado en Videojuego. El algoritmo recibe un videojuego y recomienda otros cinco de similares características. Se desarrolló un modelo basado en el algoritmo K Vecinos mas Cercanos y utilizando como métrica la similitud del coseno. Se detallan a continuación las distintas versiones del modelo con sus características y modificaciones respecto a las versiones previas. El desempeño de los modelos se evaluó a partir de una selección de videojuegos clásicos y variados en cuanto a género, época y características. Se utiliza como modelo final la cuarta versión (V4) (Figura 11).
 
 <p align="center">
-   <img src="Imagenes/11_sist_reco.jpg" width="400">
+   <img src="Imagenes/11_sist_reco.JPG" width="400">
 </p>
 <p align="center">
    <em>Figura 11: Sistema de Recomendación. Versiones </em>
@@ -142,23 +142,23 @@ Se realiza un sistema de recomendación basado en Videojuego. El algoritmo recib
 
 ### Desempeño del modelo
 
-# Indices de prueba. Juegos de diferentes características (Los simbolos ++ o -- indican un cambio positivo o negativo respecto al desempeño del modelo anterior)
+Indices de prueba. Juegos de diferentes características (Los simbolos ++ o -- indican un cambio positivo o negativo respecto al desempeño del modelo anterior)
 
-#-------- JUEGO ---------|---id---|-Desempeño--------------
-# -----------------------|--------|------------------------
-# Counter Strike         |     10 | muy bien
-# PES 2018               | 592580 | muy bien ++
-# AGE III                | 105450 | muy bien
-# Simcity 4              |  24780 | muy bien
-# Tennis Elbow 2013      | 346470 | regular (falta que recomiende otros juegos de tennis)
-# Civilization IV        |  16810 | excelente
-# Darksiders             |  50620 | excelente
-# Fallout NV             |  22380 | muy bien ++ (pueden faltar juegos de la franquicia)
-# Dragon Age Origins     |  47810 | excelente
-# Star Wars Jedi Knight  |   6020 | excelente ++
-# NFS Shift              |  24870 | excelente ++
-# Final DOOM             |   2290 | excelente
-# Earthworm Jim          | 901147 | muy bien   
+------- JUEGO ---------|---id---|-Desempeño--------------
+-----------------------|--------|------------------------
+Counter Strike         |     10 | muy bien
+PES 2018               | 592580 | muy bien ++
+AGE III                | 105450 | muy bien
+Simcity 4              |  24780 | muy bien
+Tennis Elbow 2013      | 346470 | regular (falta que recomiende otros juegos de tennis)
+Civilization IV        |  16810 | excelente
+Darksiders             |  50620 | excelente
+Fallout NV             |  22380 | muy bien ++ (pueden faltar juegos de la franquicia)
+Dragon Age Origins     |  47810 | excelente
+Star Wars Jedi Knight  |   6020 | excelente ++
+NFS Shift              |  24870 | excelente ++
+Final DOOM             |   2290 | excelente
+Earthworm Jim          | 901147 | muy bien   
 
 
 ## 6 Funciones y deploying
