@@ -228,33 +228,32 @@ def sentiment_analysis(anio):
 
 def recomendacion_juego(item_id):
 
-    from sklearn.neighbors import NearestNeighbors
+    #from sklearn.neighbors import NearestNeighbors
     
     df_sist_reco_v4 = pd.read_parquet('df_sist_reco_v4.parquet')
 
     games_dummies = df_sist_reco_v4.drop(columns=['item_id', 'app_name'])
+    games_id_names = df_sist_reco_v4[['item_id', 'app_name']]
 
-    n_neighbors=6
+    n_neighbors = 6
     nneighbors = NearestNeighbors(n_neighbors = n_neighbors, metric = 'cosine').fit(games_dummies)
 
-    # Extraer los vectores de características del juego seleccionado
-    game_eval = np.array(games_dummies.loc[item_id]).reshape(1, -1)
-    
-    # Obtener los índices de los juegos más similares
+    ### 5.9 TEST de modelo 
+
+    item_busqueda = 467620
+    index = games_dummies.index[games_id_names['item_id'] == item_busqueda][0]
+    #print(games_id_names["app_name"].iloc[index])
+
+    game_eval = np.array(games_dummies.iloc[index]).reshape(1,-1)
     dif, ind = nneighbors.kneighbors(game_eval)
     
-    # Lista para almacenar los juegos recomendados en formato string
-    juegos_recomendados = []
-    
-    # Juego seleccionado
-    juego_seleccionado = {"Juego Seleccionado": df_sist_reco_v4.loc[ind[0][0], 'app_name']}
-    juegos_recomendados.append(juego_seleccionado)
-    
     # Juegos recomendados
-    for i in range(1, 6):  # Tomamos los 5 juegos recomendados
-        juego_recomendado = {"Juego Recomendado " + str(i): df_sist_reco_v4.loc[ind[0][i], 'app_name']}
-        juegos_recomendados.append(juego_recomendado)
+    juegos_recomendados = { "Juegos recomendados:"
+        "# 1 ": games_id_names.at[ind[0][1], "app_name"],
+        "# 2": games_id_names.at[ind[0][2], "app_name"],
+        "# 3": games_id_names.at[ind[0][3], "app_name"],
+        "# 4": games_id_names.at[ind[0][4], "app_name"],
+        "# 5": games_id_names.at[ind[0][5], "app_name"],
+    }
     
     return juegos_recomendados
-
-# 76561198079601835
