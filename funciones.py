@@ -208,11 +208,7 @@ def sentiment_analysis(anio):
     sentiment_counts_anio = sentiment_counts.loc[anio]
     
     # Formatear el resultado en el formato requerido
-    resultado = {
-        "Negative": sentiment_counts_anio.get(0, 0),
-        "Neutral": sentiment_counts_anio.get(1, 0),
-        "Positive": sentiment_counts_anio.get(2, 0)
-    }
+    resultado = f"Negative:{sentiment_counts_anio.get(0, 0)}, Neutral:{sentiment_counts_anio.get(1, 0)}, Positive:{sentiment_counts_anio.get(2, 0)}"
 
     return resultado
 
