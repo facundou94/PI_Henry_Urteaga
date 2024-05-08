@@ -34,16 +34,28 @@ A continuación, la descripción de cada capítulo será coincidente con los scr
 ## 1 Extracción
 
 </p>
-* La fase de extracción de datos implicó la implementación de funciones específicas para recuperar información de los archivos "users_items", "users_reviews" y "steam_games". Inicialmente, se planeó desarrollar una función general que pudiera utilizarse para los tres archivos; sin embargo, debido a las singularidades de cada uno, resultó necesario crear una función de extracción individual para cada archivo. Este proceso representó una de las etapas más extensas del proyecto, ya que implicó principalmente un enfoque de prueba y error basado en la verificación empírica. Los archivos originales en formato json, debido a su tamaño, no están incluídos en este repositorio, pero se puede acceder a ellos en el siguiente repositorio: https://drive.google.com/drive/folders/1HqBG2-sUkz_R3h1dZU5F2uAzpRn7BSpj
+La fase de extracción de datos implicó la implementación de funciones específicas para recuperar información de los archivos "users_items", "users_reviews" y "steam_games". Inicialmente, se planeó desarrollar una función general que pudiera utilizarse para los tres archivos; sin embargo, debido a las singularidades de cada uno, resultó necesario crear una función de extracción individual para cada archivo. Este proceso representó una de las etapas más extensas del proyecto, ya que implicó principalmente un enfoque de prueba y error basado en la verificación empírica. Los archivos originales en formato json, debido a su tamaño, no están incluídos en este repositorio, pero se puede acceder a ellos en el siguiente repositorio: https://drive.google.com/drive/folders/1HqBG2-sUkz_R3h1dZU5F2uAzpRn7BSpj
 </p>
 
 ## 2 Transformación
 
 </p>
-Los lenguajes utilizados para el procesamiento y el análisis de los espectros fueron pyhton y R. Los archivos están enumerados por orden de procesamiento. A excepción del primer archivo de pre-procesamiento, los archivos están nomenclados de la siguiente manera:
+En este proceso, se lleva a cabo el desanidado de columnas específicas que contenían datos anidados, la normalización y la limpieza general de los datos. Además, se realizan una serie de análisis que podrían considerarse una primera parte de EDA. Por ejemplo, identificar que el tiempo jugado por los usuarios  las últimas dos semanas (last_2_weeks) sea "lógico" (Figura 1), o que la distribución del porcentaje de opiniones positivas de los juegos tenga sentido (Figura 2).
 </p>
 
-*x_alg_muestras_dias*
+<p align="center">
+   <img src="Imagenes/1_dens_2_weeks.jpeg" width="400">
+</p>
+<p align="center">
+   <em>Figura 1: Distribución de tiempo jugado las últimas dos semanas por usuario </em>
+</p>
+
+<p align="center">
+   <img src="Imagenes/2_dens_op_pos.jpeg" width="400">
+</p>
+<p align="center">
+   <em>Figura 2: Densidad de opiniones positivas totales (de 0 a 100 %) </em>
+</p>
 
 Donde
 
