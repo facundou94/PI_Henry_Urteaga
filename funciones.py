@@ -197,23 +197,21 @@ def UsersNotRecommend(anio):
 # de reseñas de usuarios que se encuentren categorizados con un análisis de sentimiento.
 
 def sentiment_analysis(anio):
-    # Carga selectiva de columnas y filtrado directo por año
-    df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet', columns=["item_id", "recommend", "sentiment_analysis"])
-    df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["item_id", "app_name", "release_year"])
-    df_reviews_juegos = pd.merge(df_reviews_con_sa, df_games_tec, on='item_id', how='inner')
-
-    # Verificar si el año especificado está presente en la base de datos
-    if anio not in df_reviews_juegos['release_year'].values:
+    # Cargar el DataFrame desde el archivo
+    sentiment_counts = pd.read_csv('sentiment_counts.csv', index_col='release_year')
+    
+    # Verificar si el año especificado está presente en el DataFrame
+    if anio not in sentiment_counts.index:
         return "Año no encontrado en la base de datos."
-
-    # Contar la cantidad de registros para cada categoría de análisis de sentimiento
-    conteo_sentimientos = df_reviews_juegos[df_reviews_juegos['release_year'] == anio]['sentiment_analysis'].value_counts()
-
+    
+    # Obtener la cuenta de análisis de sentimientos para el año especificado
+    sentiment_counts_anio = sentiment_counts.loc[anio]
+    
     # Formatear el resultado en el formato requerido
     resultado = {
-        "Negative": conteo_sentimientos.get(0, 0),
-        "Neutral": conteo_sentimientos.get(1, 0),
-        "Positive": conteo_sentimientos.get(2, 0)
+        "Negative": sentiment_counts_anio.get(0, 0),
+        "Neutral": sentiment_counts_anio.get(1, 0),
+        "Positive": sentiment_counts_anio.get(2, 0)
     }
 
     return resultado
