@@ -104,6 +104,24 @@ En esta etapa se realiza el análisis exploratorio general, lo cual servirá par
 
 ## 4 Sentiment Analysis
 
+</p>
+Para realizar el análisis de sentimientos, se emplea la biblioteca NLTK en la etapa de tokenización de las frases. Este proceso es cíclico, ya que de manera empírica se observan palabras neutrales que se repiten con alta frecuencia y que no son tenidas en cuenta por la biblioteca de stopwords, siendo agregadas para reducir la carga de palabras en el posterior procesamiento. En esta etapa, nos apoyamos en herramientas como la nube de palabras (Figura 9). Posteriormente, para finalizar el análisis de sentimientos, se utilizan los métodos proporcionados por la función SentimentIntensityAnalyzer de la biblioteca Vader. Para evaluar el desempeño del algoritmo, se contrastan las reseñas positivas elaboradas por usuarios con el resultado del análisis de sentimientos. Lo que se debe observar principalmente en esta instancia es que las reseñas positivas coincidan con un análisis de sentimientos positivo en la mayoría de los casos (Figura 10).
+</p>
+
+<p align="center">
+   <img src="Imagenes/9_nube_palabras.jpg" width="400">
+</p>
+<p align="center">
+   <em>Figura 9: Nube de palabras </em>
+</p>
+
+<p align="center">
+   <img src="Imagenes/10_barras_sa.jpg" width="400">
+</p>
+<p align="center">
+   <em>Figura 10: Comparación entre reseñas y análisis de sentimiento </em>
+</p>
+
 ## 5 Sistema de Recomendación
 
 ## 6 Funciones y deploying
