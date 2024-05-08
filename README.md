@@ -89,14 +89,14 @@ En esta etapa se realiza el análisis exploratorio general, lo cual servirá par
 </p>
 
 <p align="center">
-   <img src="Imagenes/6_proporcion_spec.jpg" width="400">
+   <img src="Imagenes/7_proporcion_spec.jpg" width="400">
 </p>
 <p align="center">
    <em>Figura 6: Proporciones de specs </em>
 </p>
 
 <p align="center">
-   <img src="Imagenes/6_proporcion_genres.jpg" width="400">
+   <img src="Imagenes/8_proporcion_genres.jpg" width="400">
 </p>
 <p align="center">
    <em>Figura 7: Proporciones de genres </em>
