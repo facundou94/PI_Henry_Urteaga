@@ -215,6 +215,8 @@ def sentiment_analysis(anio):
 # Ingresando el id de producto, deberíamos recibir una lista con 5 juegos recomendados similares al ingresado.
 
 def recomendacion_juego(id):
+    import warnings
+    warnings.filterwarnings('ignore')
     # Carga de datos
     df_sist_reco_v4 = pd.read_parquet('df_sist_reco_v4.parquet')
     games_dummies = df_sist_reco_v4.drop(columns=['item_id', 'app_name'])
