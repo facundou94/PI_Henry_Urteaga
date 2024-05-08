@@ -226,7 +226,7 @@ def sentiment_analysis(anio):
 # 6. def recomendacion_juego( id de producto ): 
 # Ingresando el id de producto, deberíamos recibir una lista con 5 juegos recomendados similares al ingresado.
 
-def recomendacion_juego(item_id):
+def recomendacion_juego(id):
 
     #from sklearn.neighbors import NearestNeighbors
     
@@ -240,7 +240,7 @@ def recomendacion_juego(item_id):
 
     ### 5.9 TEST de modelo 
 
-    item_busqueda = 467620
+    item_busqueda = id
     index = games_dummies.index[games_id_names['item_id'] == item_busqueda][0]
     #print(games_id_names["app_name"].iloc[index])
 
