@@ -197,30 +197,25 @@ def UsersNotRecommend(anio):
 # de reseñas de usuarios que se encuentren categorizados con un análisis de sentimiento.
 
 def sentiment_analysis(anio):
+    # Carga selectiva de columnas y filtrado directo por año
+    df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet', columns=["item_id", "recommend", "sentiment_analysis"])
+    df_games_tec = pd.read_parquet('df_games_tec.parquet', columns=["item_id", "app_name", "release_year"])
+    df_reviews_juegos = pd.merge(df_reviews_con_sa, df_games_tec, on='item_id', how='inner')
 
-    df_games_tec = pd.read_parquet('df_games_tec.parquet')
-    df_reviews_con_sa = pd.read_parquet('df_reviews_con_sa.parquet')
-
-    df_reviews_juegos = pd.merge(df_reviews_con_sa[['item_id', 'recommend','sentiment_analysis']], 
-                             df_games_tec[["item_id","app_name","release_year"]], on='item_id', how='inner')
-    
-    # Verificar si el año especificado está presente en el DataFrame
-    if anio not in df_reviews_juegos['release_year'].unique():
+    # Verificar si el año especificado está presente en la base de datos
+    if anio not in df_reviews_juegos['release_year'].values:
         return "Año no encontrado en la base de datos."
-    
-    # Filtrar el DataFrame por el año especificado
-    df_anio = df_reviews_juegos[df_reviews_juegos['release_year'] == anio]
-    
+
     # Contar la cantidad de registros para cada categoría de análisis de sentimiento
-    conteo_sentimientos = df_anio['sentiment_analysis'].value_counts()
-    
+    conteo_sentimientos = df_reviews_juegos[df_reviews_juegos['release_year'] == anio]['sentiment_analysis'].value_counts()
+
     # Formatear el resultado en el formato requerido
     resultado = {
         "Negative": conteo_sentimientos.get(0, 0),
         "Neutral": conteo_sentimientos.get(1, 0),
         "Positive": conteo_sentimientos.get(2, 0)
     }
-    
+
     return resultado
 
 # 6. def recomendacion_juego( id de producto ): 
