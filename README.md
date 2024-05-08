@@ -144,7 +144,7 @@ Se realiza un sistema de recomendación basado en Videojuego. El algoritmo recib
 
 Indices de prueba. Juegos de diferentes características (Los simbolos ++ o -- indican un cambio positivo o negativo respecto al desempeño del modelo anterior)
 
-------- JUEGO ---------|---id---|-Desempeño--------------
+------- JUEGO ---------|---id---|-------Desempeño--------
 -----------------------|--------|------------------------
 Counter Strike         |     10 | muy bien
 PES 2018               | 592580 | muy bien ++
@@ -162,3 +162,7 @@ Earthworm Jim          | 901147 | muy bien
 
 
 ## 6 Funciones y deploying
+
+</p>
+Se realizan una serie de funciones de búsqueda de estadísticas relevantes de la base de datos, detalladas en el archivo funciones.py. Se implementan las mismas en una API mediante la interfaz fastAPI y el deploying en el servidor de RENDER. El mismo está disponible en la página: https://pi-henry-urteaga.onrender.com/docs
+</p>
