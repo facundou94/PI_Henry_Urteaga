@@ -44,14 +44,14 @@ En este proceso, se lleva a cabo el desanidado de columnas específicas que cont
 </p>
 
 <p align="center">
-   <img src="Imagenes/1_dens_2_weeks.jpeg" width="400">
+   <img src="Imagenes/1_dens_2_weeks.jpg" width="400">
 </p>
 <p align="center">
    <em>Figura 1: Distribución de tiempo jugado las últimas dos semanas por usuario </em>
 </p>
 
 <p align="center">
-   <img src="Imagenes/2_dens_op_pos.jpeg" width="400">
+   <img src="Imagenes/2_dens_op_pos.jpg" width="400">
 </p>
 <p align="center">
    <em>Figura 2: Densidad de opiniones positivas totales (de 0 a 100 %) </em>
