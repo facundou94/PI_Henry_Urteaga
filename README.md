@@ -11,7 +11,7 @@
 
 *[Descripción del proyecto](#descripción-del-proyecto)
 
-*[1_Extracción](#1-extraccion)
+*[1_Extracción](#1-extracción)
 
 *[2_Transformación](#2-transformación)
 
