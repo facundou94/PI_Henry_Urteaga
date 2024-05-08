@@ -124,294 +124,41 @@ Para realizar el análisis de sentimientos, se emplea la biblioteca NLTK en la e
 
 ## 5 Sistema de Recomendación
 
+</p>
+Se realiza un sistema de recomendación basado en Videojuego. El algoritmo recibe un videojuego y recomienda otros cinco de similares características. Se desarrolló un modelo basado en el algoritmo K Vecinos mas Cercanos y utilizando como métrica la similitud del coseno. Se detallan a continuación las distintas versiones del modelo con sus características y modificaciones respecto a las versiones previas. El desempeño de los modelos se evaluó a partir de una selección de videojuegos clásicos y variados en cuanto a género, época y características. Se utiliza como modelo final la cuarta versión (V4) (Figura 11).
+
+<p align="center">
+   <img src="Imagenes/11_sist_reco.jpg" width="400">
+</p>
+<p align="center">
+   <em>Figura 11: Sistema de Recomendación. Versiones </em>
+</p>
+
+* V1: Modelo inicial. Se utilizan las etiquetas de "genres", "tags" y "specs" como variables dummies (1 presencia, 0 ausencia) y se entrena el modelo. El desempeño de este modelo es regular
+* V2: Segunda Versión. Se eliminan algunas etiquetas, principalmente de "tags" y "specs" que, a criterio del científico de datos, no aportan información y pueden generar confusión al momento de clasificar. Esto se debe a que son etiquetas extrañas y que no suelen discriminar la preferencia o no de un Usuario al momento de elegir un videojuego. Además se pondera genres*2 debido a que las etiquetas en general son pocas pero mas concretas en relación al estilo del videojuego. Ocurre lo contrario con tags que es penalizado en un factor de 0.5 debido a la cantidad de etiquetas que poseen en general los videojuegos, y además, por un estudio mas metódico, se descubre que estas etiquetas son definidas por usuarios y en muchos casos no corresponden a las carecterísticas del videojuego. Un ejemplo sencillo es el juego de fútbol PES 2018 que posee la etiqueta de "Gore" y "Heist". El desempeño de este modelo es aceptable
+* V3: Tercera Versión. Se elimina el contenido descargable, DLCs y expansiones, ya que en general no deseamos que se recomiende ese tipo de producto. Además, se agrega como variable la fecha de lanzamiento (agrupada en lustros) ya que en general los usuarios suelen desear conocer videojuegos de una misma época. De todas maneras esto no es exclusivo, por lo que se agrega como una variable mas que afecte moderadamente al sistema de recomendación. El desempeño de este modelo es muy bueno
+* V4: Cuarta Versión. Al observar que en general los videojuegos tienen pocas etiquetas "genres" y muchas etiquetas "specs" y "tags", entendiendo que las etiquetas "genres" son las mas valiosas y representativas del videojuego y, por último, sabiendo que al valer todas las etiquetas lo mismo, la influencia de pocas etiquetas "genres" se vería diluída por muchas etiquetas "specs" o "tags" se procede a penalizar la influencia de estas últimas a partir de dividir cada etiqueta por el total de etiquetas en su categoría. Entonces, por ejemplo, si el videojuego posee 10 etiquetas "tags", cada una pasaría a valer 1/10 o 0.1 en lugar de 1. El desempeño de este modelo es excelente.
+</p>
+
+### Desempeño del modelo
+
+# Indices de prueba. Juegos de diferentes características (Los simbolos ++ o -- indican un cambio positivo o negativo respecto al desempeño del modelo anterior)
+
+#-------- JUEGO ---------|---id---|-Desempeño--------------
+# -----------------------|--------|------------------------
+# Counter Strike         |     10 | muy bien
+# PES 2018               | 592580 | muy bien ++
+# AGE III                | 105450 | muy bien
+# Simcity 4              |  24780 | muy bien
+# Tennis Elbow 2013      | 346470 | regular (falta que recomiende otros juegos de tennis)
+# Civilization IV        |  16810 | excelente
+# Darksiders             |  50620 | excelente
+# Fallout NV             |  22380 | muy bien ++ (pueden faltar juegos de la franquicia)
+# Dragon Age Origins     |  47810 | excelente
+# Star Wars Jedi Knight  |   6020 | excelente ++
+# NFS Shift              |  24870 | excelente ++
+# Final DOOM             |   2290 | excelente
+# Earthworm Jim          | 901147 | muy bien   
+
+
 ## 6 Funciones y deploying
-
-
-### Archivo: 1_preprocesamiento.R
-
-El pre-procesamiento está compuesto por las siguientes etapas:
-
-* Carga de los espectros y su metadata correspondiente
-
-  <p align="center">
-     <img src="Imagenes/1_pre_crudo.jpeg" width="400">
-   </p>
-   <p align="center">
-     <em>Figura 1: Espectro cargado sin transformar</em>
-   </p>
-
-* <p align="justify"> Control de calidad de los espectros mediante el uso de un estimador robusto Q. A fines prácticos, este control de calidad filtra espectros ruidosos o con el espectro "planchado" debido al fenómeno de supresión iónica en la etapa de adquisición. </p>
-
-* <p align="justify"> Transformación de los espectros. Transformación de intensidad mediante la función raíz cuadrada (sqrt), suavizado del espectro mediante la función "wavelet", detección y remoción de la linea de base y alineamiento de los espectros, en ese orden. </p>
-
-   <p align="center">
-   <img src='Imagenes/1_pre_baseline.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 2: Detección de la linea de base</em>
-   </p>
-   
-   <p align="center">
-   <img src='Imagenes/1_pre_baseline_removed.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 3: Espectro con la línea de base removida</em>
-   </p>
-
-* Se realiza un promediado de las réplicas técnicas y biológicas.
-
-* <p align="justify">Extracción de picos preponderantes de cada espectro. Esto se logra definiendo un umbral a partir del cual se comienzan a detectar los picos. Este umbral se define a partir de dos veces la relación señal a ruido del espectro (SNR).</p>
-
-   <p align="center">
-   <img src='Imagenes/1_pre_snr.jpeg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 4: Espectro con la detección del nivel de ruido (en rojo) y la definición del umbral (en azul)</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/1_pre_picos.jpeg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 5: Detección de picos por encima del umbral establecido</em>
-   </p>
-
-* <p align="justify">A partir de la detección de los picos en cada espectro, se crea la matriz de intensidad, las cual contiene en sus filas las muestras y en las columnas los picos detectados. Esta matriz también es sujeta a transformaciones para preservar los picos con mayor frecuencia de aparición en los espectros y eliminar los picos "extraños", ya que lo que buscamos en esta instancia es que las variables (en este caso los picos) aporten información al sistema para su posterior análisis. Se crea también la matriz dicotómica, la cual se origina a partir de la definición de un umbral en la matriz de intensidades que transforma los valores de los picos en 1 y 0 segun la presencia o ausencia de cada pico en cada muestra.</p>
-
-   <p align="center">
-   <img src='Imagenes/1_pre_matriz_grafica.jpeg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 6: Representación gráfica de la matriz de intensidades dicotómica. Las filas corresponden a las muestras y las columnas a los picos. El color celeste indica presencia del pico en esa muestra</em>
-   </p>
-
-   
-* <p align="justify">Por último, guardar las matrices y los metadatos. Se obtienen matrices de intensidades y dicotómicas tanto para las muestras individuales (matriz de 51 filas x 218 columnas) como para las réplicas biológicas (matriz de 122 filas x 218 columnas)</p>
-
-## Seguimiento de cantidad de muestras
-
-* Muestras iniciales o réplicas técnicas: 303
-* Réplicas técnicas luego de control de calidad: 297
-   * Réplicas biológicas: 122
-   * Réplicas biológicas de días 2 y 4: 107
-      * Muestras biológicas independientes: 55
-      * Muestras biológicas independientes de días 2 y 4: 43
-
-## Algoritmos No Supervisados
-
-El procedimiento para la realización de los algoritmos No Supervisados fue el siguiente:
-   1) Elección de conjunto de muestras (Réplicas biológicas o muestras independientes)
-   2) Elección de los tiempos de muestreo (Todos los días o solo los días 2 y 4)
-   3) Por medio de la matriz dicotómica, se aplica la función *bindaranking* con la cual se obtienen los picos que mejor variabilidad aportan a partir de un factor que se ingresa como variable de entrada. Este factor puede ser CLP vs SHAM, o días por ejemplo.
-   4) Se realizan simulaciones de los modelos variando la cantidad de X primeros picos del análisis realizado en (3) y los algoritmos de clustering. Se realizaron pruebas con kmeans, HKmeans y PAM.
-   5) Una vez realizada la clasificación No Supervisada, se comparan los puntos clasificados con su etiqueta de interés real (CLP, SHAM).
-
-Resultados:
-
-   ### Archivo: 2_ns_m122_d1247
-
-   <p align="center">
-   <img src='Imagenes/2_ranking_picos.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 7: Picos mas preponderantes seleccionados por el algoritmo bindaranking a partir del factor CLP vs SHAM</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/2_CLP_vs_SHAM_kmeans.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 8: Clustering - CLP vs SHAM - Días 1, 2, 4 y 7 - TOP 20 picos - Algoritmo: kmeans</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/2_tasa_acierto_total.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 9: Tasa de acierto total</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/2_tasa_acierto_por_dia.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 10: Tasa de acierto por día</em>
-   </p>
-   
-   ### Archivo: 4_ns_m122_d24
-
-   <p align="center">
-   <img src='Imagenes/4_picos_4clusters.jpeg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 11: Picos mas preponderantes seleccionados por el algoritmo bindaranking a partir del factor CLP_D2 vs CLP_D4 vs SHAM_D4 vs SHAM_D2</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/4_hkmeans_4_grupos.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 12: Clustering - CLP vs SHAM - Días 2 y 4 - TOP 30 picos - Algoritmo: Hkmeans</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/4_kmeans_2_clusters_4_grupos.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 12: Clustering - CLP vs SHAM - Días 2 y 4 - TOP 15 picos - Algoritmo: kmeans</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/4_kmeans_top10.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 13: Clustering - CLP vs SHAM - Días 2 y 4 - TOP 10 picos - Algoritmo: kmeans</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/4_pam_2_clusters_4_grupos.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 14: Clustering - CLP vs SHAM - Días 2 y 4 - TOP 20 picos - Algoritmo: PAM</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/4_pam_3_clusters_4_grupos.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 15: Clustering - CLP vs SHAM - Días 2 y 4 - 3 clusters - TOP 20 picos - Algoritmo: PAM</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/4_pam_3_grupos_3_clusters.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 16: Clustering - CLP vs SHAM - Días 2 y 4 - 3 clusters - TOP 30 picos - Algoritmo: PAM</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/4_pam_top10.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 17: Clustering - CLP vs SHAM - Días 2 y 4 - TOP 10 picos - Algoritmo: PAM</em>
-   </p>
-   
-
-   ### Archivo: 5_ns_m51_d24
-
-   <p align="center">
-   <img src='Imagenes/5_picos.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 18:  Picos mas preponderantes seleccionados por el algoritmo bindaranking a partir del factor CLP_D2 vs CLP_D4 vs SHAM</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/5_pam_3clusters.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 19: Clustering - CLP_D2 vs CLP_D4 vs SHAM - TOP 15 picos - 3 CLUSTERS - Algoritmo: PAM</em>
-   </p>
-   
-   
-   ### Archivo: 6_ns_m51_vs_varios
-
-   <p align="center">
-   <img src='Imagenes/6_picos_clpd2d4.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 20: Picos mas preponderantes seleccionados por el algoritmo bindaranking a partir del factor CLP_D2 vs CLP_D4</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/6_pam_clp_d2d4.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 21:  Clustering - CLP_D2 vs CLP_D4 - TOP 15 picos - 2 CLUSTERS - Algoritmo: PAM</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/6_picos_clp_sham_d2.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 22: Picos mas preponderantes seleccionados por el algoritmo bindaranking a partir del factor CLP_D2 vs SHAM_D2</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/6_pam_clp_sham_d2.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 23:  Clustering - CLP_D2 vs SHAM_D2 - TOP 20 picos - 2 CLUSTERS - Algoritmo: PAM</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/6_picos_clp_sham_d4.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 24: Picos mas preponderantes seleccionados por el algoritmo bindaranking a partir del factor CLP_D4 vs SHAM_D4</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/6_pam_clp_sham_d4.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 25:  Clustering - CLP_D4 vs SHAM_D4 - TOP 15 picos - 2 CLUSTERS - Algoritmo: PAM</em>
-   </p>
-   
-## Algoritmos Supervisados
-
-   ### Archivo: 3_s_m122_d1247.R
-
-   Se probaron modelos de aprendizaje supervisado con las 122 réplicas biológicas correspondiente a todos los días.
-   
-   1) <p align="justify">Se cargó la matriz dicotómica de 122 réplicas biológicas x 218 picos y se dividieron las muestras en grupo de entrenamiento y grupo de testeo bajo una relación de 60% entrenamiento y 40% testeo.</p>
-   2) <p align="justify">Se seleccionan los 20 picos mas preponderantes mediante el algoritmo *bindaranking* bajo el factor CLP/SHAM con el propósito de reducir la cantidad de predictores.</p>
-   3) Se entrenaron los siguientes modelos:
-         * Binda (Binary Discriminant Analysis)
-         * Random Forest
-         * kNN (k nearest neighbor)
-         * SVM Radial (Support Vector Machine con kernel radial)
-   4) Se realizan las predicciones y a partir de ellas se generan las curvas ROC para cada modelo.
-
-   <p align="center">
-   <img src='Imagenes/3_sup_curvasROC.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 26:  Curvas ROC para cada modelo de entrenamiento y valores de AUC (Área bajo la curva)</em>
-   </p>
-
-   ### Archivo: 7_s_m107_d24_top15.ipynb
-
-   Se probaron modelos de aprendizaje supervisado con 107 réplicas biológicas correspondiente a los días 2 y 4.
-
-   1) <p align="justify">Se representaron los porcentajes de muestras correspondiente a cada tipo de factor (CLP_D2, CLP_D4 y SHAM)</p>
-   2) <p align="justify">Se entrenó un modelo de Regresión Logística</p>
-
-      *Regresión Logística - accuracy score: 86%*
-
-   <p align="center">
-   <img src='Imagenes/7_matriz_confusion_reglog.JPG' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 27:  Matriz de confusión de la Regresión Logística</em>
-   </p>
-   
-   3) <p align="justify">Se entrenó un modelo de Random Forest</p>
-
-      *Random Forest- accuracy score: 72% (A partir de validación cruzada con k=5)*
-
-   <p align="center">
-   <img src='Imagenes/7_picos_rf.JPG' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 28:  Preponderancia de predictores del Random Forest</em>
-   </p>
-
-   <p align="center">
-   <img src='Imagenes/7_arbol_decision.jpg' width='400'>
-   </p>
-   <p align="center">
-     <em>Figura 29:  Arbol de decisión del Random Forest</em>
-   </p>
-
-## Conclusión
