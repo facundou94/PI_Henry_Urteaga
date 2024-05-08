@@ -114,13 +114,13 @@ def UserForGenre(genero):
     # Agrupa las horas jugadas por año para ese usuario
     horas_por_anio = df_usuario_max_playtime.groupby('release_year')['playtime_forever'].sum()
     
-    # Construye el diccionario con el formato deseado
-    resultado = {
-        f"Usuario con más horas jugadas para Género {genero}": usuario_max_playtime,
-        "Horas jugadas": [{"Año": año, "Horas": horas} for año, horas in horas_por_anio.items()]
-    }
-    
-    return resultado
+    # Construye la cadena de texto con el formato deseado
+    resultado_str = (f"Usuario con más horas jugadas para Género {genero}: {usuario_max_playtime}, " +
+                 "Horas jugadas: [" +
+                 ", ".join([f"{{'Año': {año}, 'Horas': {horas}}}" for año, horas in horas_por_anio.items()]) +
+                 "]")
+
+    return resultado_str
 
 # 4. Función UsersRecommend
 # def UsersRecommend( año : int ): Devuelve el top 3 de juegos MÁS recomendados por usuarios para el año dado. 
@@ -207,8 +207,7 @@ def sentiment_analysis(anio):
     # Obtener la cuenta de análisis de sentimientos para el año especificado
     sentiment_counts_anio = sentiment_counts.loc[anio]
     
-    # Formatear el resultado en el formato requerido
-    resultado = f"Negative:{sentiment_counts_anio.get(0, 0)}, Neutral:{sentiment_counts_anio.get(1, 0)}, Positive:{sentiment_counts_anio.get(2, 0)}"
+    resultado = f"Sentiment analysis para el año {anio}: [Negative:{sentiment_counts_anio.get(0, 0)}, Neutral:{sentiment_counts_anio.get(1, 0)}, Positive:{sentiment_counts_anio.get(2, 0)}]"
 
     return resultado
 
@@ -231,11 +230,11 @@ def recomendacion_juego(id):
     dif, ind = nneighbors.kneighbors(game_eval)
 
     # Construir la cadena de juegos recomendados
-    juegos_recomendados_str = ("Juegos recomendados:\n" +
-                                "# 1: " + games_id_names.at[ind[0][1], "app_name"] + "\n" +
-                                "# 2: " + games_id_names.at[ind[0][2], "app_name"] + "\n" +
-                                "# 3: " + games_id_names.at[ind[0][3], "app_name"] + "\n" +
-                                "# 4: " + games_id_names.at[ind[0][4], "app_name"] + "\n" +
-                                "# 5: " + games_id_names.at[ind[0][5], "app_name"])
+    juegos_recomendados_str = ("Juegos recomendados --->" +
+                                " # 1: " + games_id_names.at[ind[0][1], "app_name"]  +
+                                " # 2: " + games_id_names.at[ind[0][2], "app_name"]  +
+                                " # 3: " + games_id_names.at[ind[0][3], "app_name"]  +
+                                " # 4: " + games_id_names.at[ind[0][4], "app_name"]  +
+                                " # 5: " + games_id_names.at[ind[0][5], "app_name"])
 
     return juegos_recomendados_str
