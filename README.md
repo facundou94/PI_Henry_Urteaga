@@ -102,6 +102,11 @@ En esta etapa se realiza el análisis exploratorio general, lo cual servirá par
    <em>Figura 7: Proporciones de genres </em>
 </p>
 
+## 4 Sentiment Analysis
+
+## 5 Sistema de Recomendación
+
+## 6 Funciones y deploying
 
 
 ### Archivo: 1_preprocesamiento.R
